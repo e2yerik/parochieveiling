@@ -15,7 +15,6 @@ const ProductPage: React.FC = () => {
 
     return (
         <h1>I am the product page</h1>
-        {products && products}
     );
 };
 
