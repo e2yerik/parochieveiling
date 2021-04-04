@@ -61,7 +61,7 @@ type Image {
 type Product {
   available: Boolean
 
-  code: Int!
+  code: String!
   name: String!
 
   """

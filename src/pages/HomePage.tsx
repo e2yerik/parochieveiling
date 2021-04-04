@@ -1,8 +1,7 @@
-const HomePage: React.FC = () => {
+import React from 'react';
 
-    return (
-        <h1>I am the homepage</h1>
-    );
-};
+const HomePage: React.FC = () => (
+  <h1>I am the homepage</h1>
+);
 
 export default HomePage;
