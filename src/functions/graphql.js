@@ -5,7 +5,7 @@ const fqlQueries = require('./fauna/queries');
 const { flattenDataKeys } = require('./fauna/util');
 
 const faunadb  = require('faunadb');
-const typeDefs = gql `${readFileSync('schema/netlify.graphql').toString('utf-8')}`;
+const typeDefs = gql `${readFileSync('./schema/netlify.graphql').toString('utf-8')}`;
 
 let faunaKey = process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY;
 
