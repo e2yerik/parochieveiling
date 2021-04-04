@@ -1,0 +1,130 @@
+@import-normalize;
+
+$tablet: 768px;
+$desktop: 1200px;
+
+$header-height: 100px;
+$footer-height: 50px;
+
+$color-primary: #719097;
+$color-secondary: #ccd4d2;
+$color-ternary: #82a1a3;
+$color-warmdark: #6b4a3b;
+$color-cold-dark: #2e3c56;
+
+:root {
+  --text-color: #{$color-cold-dark};
+  --text-hover: rgba(40, 40, 40, 0.8);
+
+  --header-bg: #{$color-primary};
+  --header-text-color: white;
+
+  --footer-bg: #{$color-warmdark};
+  --footer-text-color: white;
+  --footer-link-hover: #c9c9c9;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  font-size: 16px;
+  // line-height: ;
+  font-weight: 300;
+  color: var(--text-color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+.h1 {
+  font-family: "Rubik Mono One", sans-serif;
+  font-weight: normal;
+  color: $color-cold-dark;
+}
+
+a {
+  color: var(--text-color);
+
+  &:hover {
+    color: var(--text-hover);
+    text-decoration: none;
+  }
+}
+
+strong {
+  font-weight: 400;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page__nav {
+  background-color: var(--header-bg);
+  color: var(--header-text-color);
+
+  .container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: $header-height;
+  }
+
+  &-link {
+    font-size: 24px;
+    display: block;
+    margin-right: 40px;
+    color: var(--header-text-color);
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &:hover {
+      color: var(--footer-link-hover);
+    }
+
+    &--icon {
+      padding: 8px;
+      border: 1px solid transparent;
+      svg {
+        width: 24px;
+        height: auto;
+        path {
+          fill: var(--header-text-color);
+        }
+      }
+
+      &:hover svg path {
+        fill: var(--footer-link-hover);
+      }
+    }
+  }
+}
+
+.page__content {
+  min-height: calc(100vh - #{$header-height + $footer-height});
+  overflow: hidden;
+}
+
+.page__footer {
+  height: $footer-height;
+  background-color: var(--footer-bg);
+  color: var(--footer-text-color);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box-padding {
+  padding-left: 20px;
+  padding-right: 20px;
+
+  @media (min-width: $desktop) {
+    padding: 0;
+  }
+}

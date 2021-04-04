@@ -1,5 +1,4 @@
 import React from 'react';
-import { Col } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { gql, useQuery } from '@apollo/client';
 
@@ -23,11 +22,11 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
   return (
     <>
       {data && data.product && (
-        <Col>
+        <>
           <h1>{data.product.name}</h1>
           <h2>{data.product.code}</h2>
           <p>{data.product.longDescription}</p>
-        </Col>
+        </>
       )}
     </>
   );
