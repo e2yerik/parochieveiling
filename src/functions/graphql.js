@@ -146,8 +146,6 @@ const resolvers = {
         return await createClient()
           .query(fqlQueries.login(email, password))
           .then(res => {
-            console.log('res login', {secret});
-
             return {secret: res.secret};
           })
           .catch(res => {

@@ -1,11 +1,5 @@
-// const faunadb  = require('faunadb'), 
-//     {Get, Var, Match, Index, Paginate, Lambda, Map} = faunadb.query;
-
-
-const { Let } = require('faunadb');
 const query = require('faunadb');
-const  {Login, Get, Var, Match, Index, Paginate, Lambda, Map, Create, Collection} = query;
-
+const  {Login, Let, Get, Var, Match, Index, Paginate, Lambda, Map, Create, Collection} = query;
 
 module.exports = {
 
@@ -23,14 +17,26 @@ module.exports = {
         )
     },
 
-
     // MUTATIONS
+    /**
+     * Create FQL tatement for login
+     * @param {String} email 
+     * @param {String} password 
+     * @returns 
+     */
     login: (email, password) => {
         return Login(Match(Index("account_by_email"), email), {
             password
           })
     },
 
+    /**
+     * Create FQL statement for registration
+     * @param {String} name 
+     * @param {String} email 
+     * @param {String} password 
+     * @returns 
+     */
     register: (name, email, password) => {
         return Let(
             {

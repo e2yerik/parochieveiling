@@ -11,6 +11,8 @@ import ProductPageComponent from './pages/ProductPage/ProductPage';
 import ProductListerComponent from './pages/ProductLister/ProductListerPage';
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import CreateUserPage from './pages/admin/User/CreateUserPage';
+import LoginPage from './pages/LoginPage/LoginPage';
 
 const client = new ApolloClient({
   uri: "/api/graphql",
@@ -34,6 +36,9 @@ function App() {
             <Route path="/" component={HomeComponent} exact />
             <Route path="/kavels" component={ProductListerComponent} />
             <Route path="/kavel/:id" component={ProductPageComponent} />
+
+            <Route path="/login" component={LoginPage} />
+            <Route path="/admin/user/create" component={CreateUserPage} />
           </main>
 
           <footer className="page__footer">
