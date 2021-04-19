@@ -1,8 +1,8 @@
 const { ApolloServer } = require("apollo-server-lambda");
 const faunadb  = require('faunadb');
+const { login } = require("./fauna/queries");
 const fqlQueries = require('./fauna/queries');
 const { flattenDataKeys } = require('./fauna/util');
-
 
 const typeDefs = `
 type Account {
@@ -95,23 +95,33 @@ type Account {
     minPrice: Price
   }
   
+  type LoginResponse {
+    message: String
+    description: String
+    secret: String
+  }
+
+  type RegisterResponse {
+    message: String
+    description: String
+    email: String
+    name: String
+  }
+
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
-    # accountsByEmail(email: String!): [Account!]!
   }
   
   type Mutation {
-    #   # register(email: String!, password: String!): Account! @resolver
-    login(email: String!, password: String!): String!
-    #   # buyProduct(productId: Int!, priceValue: Int!): Boolean @resolver
+    login(email: String!, password: String!): LoginResponse!
+    register(name: String!, email: String!, password: String!): RegisterResponse!
   }  
 `;
 
 let faunaKey = process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY;
 
 const createClient = () => new faunadb.Client({ secret: faunaKey });
-
 
 const resolvers = {
     Query: {
@@ -129,9 +139,45 @@ const resolvers = {
     },
 
     Mutation: {
-        login: () => {
+      login: async(_, args) => {
+        const {email, password} = args;
+        console.log('Login ', {date: new Date(), email, password});
 
-            
+        return await createClient()
+          .query(fqlQueries.login(email, password))
+          .then(res => {
+            console.log('res login', {secret});
+
+            return {secret: res.secret};
+          })
+          .catch(res => {
+            console.error('failed login', res);
+            return {
+              message: res.message,
+              description: res.description
+            }
+          });
+      },
+        register: async (_, args) => {
+          const {name, email, password} = args;
+          console.log('Registering new account: ', {data: new Date(), name, email});
+
+          return await createClient()
+            .query(fqlQueries.register(name, email, password))            
+              .then(res => {
+                let {data} = res;
+                return {
+                  ...data.account.data,
+                  name: data.name
+                }
+              })
+              .catch(res => {
+                console.error('failed register', res);
+                return {
+                  message: res.message,
+                  description: res.description
+                }
+              });
         }
     },
 

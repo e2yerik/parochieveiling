@@ -38,7 +38,7 @@ function App() {
 
           <footer className="page__footer">
             <p>
-              Gemaakt voor de Lutjebroeker Kerkerveiling 2021
+              Gemaakt voor de Lutjebroeker Parochieveiling 2021
             </p>
           </footer>
         </Router>

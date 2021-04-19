@@ -1,5 +1,6 @@
 type Account {
   email: String! @unique
+  password: String!
 }
 
 type User {
@@ -23,7 +24,7 @@ type Price {
   formattedValue: String
 
   """
-  raw pric evalue
+  raw price value
   """
   value: Float!
   # active: Boolean
@@ -108,7 +109,7 @@ type Query {
 }
 
 type Mutation {
-  register(email: String!, password: String!): Account! @resolver
+  register(name: String!, email: String!, password: String!): Account! @resolver
   login(email: String!, password: String!): String! @resolver
   # buyProduct(productId: Int!, priceValue: Int!): Boolean @resolver
 }

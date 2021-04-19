@@ -2,10 +2,9 @@
 //     {Get, Var, Match, Index, Paginate, Lambda, Map} = faunadb.query;
 
 
-const { Collection } = require('faunadb');
+const { Let } = require('faunadb');
 const query = require('faunadb');
-
-const  {Get, Var, Match, Index, Paginate, Lambda, Map} = query;
+const  {Login, Get, Var, Match, Index, Paginate, Lambda, Map, Create, Collection} = query;
 
 
 module.exports = {
@@ -21,6 +20,34 @@ module.exports = {
     getProductByRef: (code) => {
         return Get(
             Match(Index("product_detail_by_code"), code)
+        )
+    },
+
+
+    // MUTATIONS
+    login: (email, password) => {
+        return Login(Match(Index("account_by_email"), email), {
+            password
+          })
+    },
+
+    register: (name, email, password) => {
+        return Let(
+            {
+                accountRef: Create(Collection("Account"), {
+                    data: {
+                        email
+                    }, credentials: {
+                        password
+                    }
+                }) 
+            },
+            Create(Collection("User"), {
+                data: {
+                    name, 
+                    account: Var('accountRef')
+                }
+            })
         )
     },
 
