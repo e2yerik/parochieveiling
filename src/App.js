@@ -14,6 +14,7 @@ import ProductListerComponent from './pages/ProductLister/ProductListerPage';
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import CreateUserPage from './pages/admin/User/CreateUserPage';
 import LoginPage from './pages/LoginPage/LoginPage';
+import AccountLink from './components/AccountLink';
 
 const client = new ApolloClient({
   uri: "/api/graphql",
@@ -22,7 +23,6 @@ const client = new ApolloClient({
     authorization: localStorage.getItem('token') || process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY
   }
 });
-
 
 function App() {
   return (
@@ -34,10 +34,7 @@ function App() {
               <Link to="/" title="Hoofdpagina" className="page__nav-link page__nav-link--icon"><FontAwesomeIcon icon={faHome} /></Link>
               <Link to="/kavels" title="Alle actieve kavels" className="page__nav-link">Kavels</Link>
               <Link to="/biedingen" title="Al je biedingen" className="page__nav-link">Mijn biedingen</Link>
-
-              <Link to="/login" title="Inloggen" className="page__nav-link page__nav-link--right page__nav--icon">
-                Inloggen <FontAwesomeIcon icon={faUserLock} />
-              </Link>
+              <AccountLink />
             </div>
           </nav>
           <main className="page__content container box-padding">
