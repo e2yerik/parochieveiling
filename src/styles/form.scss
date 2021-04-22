@@ -1,0 +1,38 @@
+.form {
+  width: 100%;
+
+  label {
+    display: block;
+    margin-bottom: 1rem;
+    width: 100%;
+    font-weight: bold;
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      display: block;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--form-input-border-color-default);
+
+      &:focus,
+      &:hover {
+        border-color: var(--form-input-border-color-focus);
+        outline: none;
+      }
+    }
+  }
+
+  footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 1.25rem;
+
+    @media (min-width: 768px) {
+      justify-content: space-between;
+      flex-direction: row;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import React, { ChangeEvent, ChangeEventHandler, FormEvent, FormEventHandler, Ref, useState } from 'react';
 
 import { gql,useMutation } from '@apollo/client';
+import { Link } from 'react-router-dom';
 
 export interface CreateUserProps {
     
@@ -15,7 +16,7 @@ interface CreateUserFormData {
 const CREATE_USER = gql`
     mutation RegisterUser($name: String!, $email: String!, $password: String!) {
       register(name: $name, email: $email, password: $password) { 
-        message, description, email
+        message, description, name
       }
     }
 `;
@@ -55,12 +56,12 @@ const CreateUserPage: React.FC<CreateUserProps> = () => {
 
 
   return (
-    <>
+    <div className="center-third">
       <h1>Gebruiker aanmaken</h1>
 
-      {data && data.register && data.register.email && 
+      {data && data.register && data.register.name && 
         <strong>
-          Gebruiker {data.register.email} aangemaakt
+          Gebruiker {data.register.name} aangemaakt
         </strong>
         }
 
@@ -68,7 +69,7 @@ const CreateUserPage: React.FC<CreateUserProps> = () => {
         <strong>Fout opgetreden: {data.register.message}: {data.register.description}</strong>
        } 
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="form">
         <label>
           Naam: <input type="text" value={formData.name} name="name" onChange={handleInputChange} />
         </label>
@@ -80,9 +81,13 @@ const CreateUserPage: React.FC<CreateUserProps> = () => {
         <label>
           Wachtwoord: <input type="password" value={formData.password} name="password" onChange={handleInputChange}  />
         </label>
-        <button type="submit">Gebruiker aanmaken</button>
+        
+        <footer>
+          <Link to="/" className="btn btn--secondary">Terug</Link>
+          <button type="submit" className="btn btn--primary">Registreren</button>
+        </footer>
       </form>
-    </>
+    </div>
   );
 };
 

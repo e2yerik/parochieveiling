@@ -72,12 +72,12 @@ type Account {
     """
     product large image
     """
-    image: Image!
+    imageUrl: String!
   
     """
     product list thumbnail
     """
-    thumb: Image!
+    thumbUrl: String!
   
     """
     positive integer available products for sale. Stock is reduced when user places bid
@@ -104,7 +104,6 @@ type Account {
   type RegisterResponse {
     message: String
     description: String
-    email: String
     name: String
   }
 
@@ -119,31 +118,29 @@ type Account {
   }  
 `;
 
-let faunaKey = process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY;
-
-const createClient = () => new faunadb.Client({ secret: faunaKey });
+const createClient = (secret) => new faunadb.Client({ secret });
 
 const resolvers = {
     Query: {
-        allProducts: async (_, args) => {
-            return await createClient()
+        allProducts: async (_, args,{faunaClient}) => {
+            return await faunaClient
                 .query(fqlQueries.listProducts(args.active))
                     .then(res => flattenDataKeys(res));
         },
 
-        product: async (_, args) => {
-            return await createClient()
+        product: async (_, args, {faunaClient}) => {
+            return await faunaClient
                 .query(fqlQueries.getProductByRef(args.code))
                     .then(res => flattenDataKeys(res));
         }
     },
 
     Mutation: {
-      login: async(_, args) => {
+      login: async(_, args, {faunaClient}) => {
         const {email, password} = args;
         console.log('Login ', {date: new Date(), email, password});
 
-        return await createClient()
+        return await faunaClient
           .query(fqlQueries.login(email, password))
           .then(res => {
             return {secret: res.secret};
@@ -156,16 +153,15 @@ const resolvers = {
             }
           });
       },
-        register: async (_, args) => {
+        register: async (_, args, {faunaClient}) => {
           const {name, email, password} = args;
           console.log('Registering new account: ', {data: new Date(), name, email});
 
-          return await createClient()
+          return await faunaClient
             .query(fqlQueries.register(name, email, password))            
               .then(res => {
                 let {data} = res;
                 return {
-                  ...data.account.data,
                   name: data.name
                 }
               })
@@ -181,9 +177,17 @@ const resolvers = {
 
 };
 
+const context = (ctx) => {
+  const secret = ctx.event.headers.authorization || '';
+
+  return {
+    faunaClient: createClient(secret)
+  };
+}
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context,
 });
   
 exports.handler = server.createHandler();

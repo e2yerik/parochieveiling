@@ -1,6 +1,9 @@
 import React, { ChangeEvent, ChangeEventHandler, FormEvent, FormEventHandler, Ref, useState } from 'react';
 
+import '../../styles/form.scss';
+
 import { gql,useMutation } from '@apollo/client';
+import { Link } from 'react-router-dom';
 
 export interface CreateUserProps {
     
@@ -48,26 +51,24 @@ const LoginPage: React.FC<CreateUserProps> = () => {
     return false;
   };
 
-//   if (data && data.login && data.login.secret) {
-//       updateFormState(initialState);
-//       // redirect to home page
-//   }
+  if (data && data.login && data.login.secret) {
+    localStorage.setItem('token', data.login.secret);
+    return (
+      <strong>
+        Ingelogd!! 
+      </strong>
+    );
+  }
 
   return (
-    <>
+    <div className="center-third">
       <h1>Inloggen</h1>
-
-      {data && data.login && data.login.secret && 
-        <strong>
-          Ingelogd!!
-        </strong>
-        }
 
        {data && data.login && data.login.message &&
         <strong>Fout opgetreden: {data.login.message}: {data.login.description}</strong>
        } 
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} className="form">
         <label>
           Email adres: <input type="email" value={formData.email} name="email" onChange={handleInputChange}  />
         </label>
@@ -75,9 +76,13 @@ const LoginPage: React.FC<CreateUserProps> = () => {
         <label>
           Wachtwoord: <input type="password" value={formData.password} name="password" onChange={handleInputChange}  />
         </label>
-        <button type="submit">Aanmelden</button>
+
+        <footer>
+          <Link to="/" className="btn btn--secondary">Terug</Link>
+          <button type="submit" className="btn btn--primary">Aanmelden</button>
+        </footer>
       </form>
-    </>
+    </div>
   );
 };
 

@@ -54,11 +54,6 @@ type AuctionBid {
   # auctionPiece: AuctionPiece @relation
 }
 
-type Image {
-  url: String!
-  altText: String!
-}
-
 type Product {
   available: Boolean
 
@@ -78,12 +73,12 @@ type Product {
   """
   product large image
   """
-  image: Image!
+  imageUrl: String
 
   """
   product list thumbnail
   """
-  thumb: Image!
+  thumbUrl: String
 
   # auctionPiece: AuctionPiece @relation
 
@@ -108,8 +103,8 @@ type Query {
   accountsByEmail(email: String!): [Account!]!
 }
 
-type Mutation {
-  register(name: String!, email: String!, password: String!): Account! @resolver
-  login(email: String!, password: String!): String! @resolver
-  # buyProduct(productId: Int!, priceValue: Int!): Boolean @resolver
-}
+# type Mutation {
+#   register(name: String!, email: String!, password: String!): Account! @resolver
+#   login(email: String!, password: String!): String! @resolver
+#   # buyProduct(productId: Int!, priceValue: Int!): Boolean @resolver
+# }

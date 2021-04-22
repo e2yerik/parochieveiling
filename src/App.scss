@@ -1,5 +1,4 @@
 @import-normalize;
-
 $tablet: 768px;
 $desktop: 1200px;
 
@@ -22,6 +21,9 @@ $color-cold-dark: #2e3c56;
   --footer-bg: #{$color-warmdark};
   --footer-text-color: white;
   --footer-link-hover: #c9c9c9;
+
+  --form-input-border-color-default: #{$color-secondary};
+  --form-input-border-color-focus: #{$color-warmdark};
 }
 
 body {
@@ -60,6 +62,10 @@ strong {
   width: 100%;
   max-width: 1100px;
   margin: 0 auto;
+}
+
+input {
+  font-family: "Lato", sans-serif;
 }
 
 .page__nav {
@@ -127,4 +133,9 @@ strong {
   @media (min-width: $desktop) {
     padding: 0;
   }
+}
+
+.center-third {
+  max-width: clamp(425px, 35%, 100vw);
+  margin: 0 auto;
 }

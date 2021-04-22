@@ -18,11 +18,13 @@ export interface ProductListProps {
 }
 
 const GET_PRODUCTS = gql`
-    query GetProductsForPage {
-        
-  allProducts(active: true) {
-    code, name, shortDescription
-  }
+    query GetProductsForPage {  
+      allProducts(active: true) {
+        code, name, shortDescription, thumbUrl,
+        price {
+          formattedValue
+        }
+      }
     }
 `;
 
@@ -59,8 +61,12 @@ const ProductListerPage: React.FC<ProductListProps> = () => {
           <li key={product.code}>
             <Link to={`/kavel/${product.code}`} className="product__list-tile">
               <div className="product__tile">
+                {product.thumbUrl && <img src={product.thumbUrl} height="240" />}
+                
                 <strong className="product__tile-name">{product.name}</strong>
-                <p className="product__tile-name">{product.shortDescription}</p>
+                <p className="product__tile-description">{product.shortDescription}</p>
+
+                {product.price && <span>{product.price.formattedValue}</span>}
               </div>
             </Link>
           </li>

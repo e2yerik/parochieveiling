@@ -1,9 +1,10 @@
 import React from 'react';
 
 import './App.scss';
+import './styles/button.scss';
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import { faHome } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faUserLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import HomeComponent from './pages/HomePage';
@@ -16,7 +17,10 @@ import LoginPage from './pages/LoginPage/LoginPage';
 
 const client = new ApolloClient({
   uri: "/api/graphql",
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  headers: {
+    authorization: localStorage.getItem('token') || process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY
+  }
 });
 
 
@@ -27,9 +31,13 @@ function App() {
         <Router>
           <nav className="page__nav">
             <div className="container box-padding">
-              <Link to="/" className="page__nav-link page__nav-link--icon"><FontAwesomeIcon icon={faHome} /></Link>
-              <Link to="/kavels" className="page__nav-link">Kavels</Link>
-              <Link to="/biedingen" className="page__nav-link">Mijn biedingen</Link>
+              <Link to="/" title="Hoofdpagina" className="page__nav-link page__nav-link--icon"><FontAwesomeIcon icon={faHome} /></Link>
+              <Link to="/kavels" title="Alle actieve kavels" className="page__nav-link">Kavels</Link>
+              <Link to="/biedingen" title="Al je biedingen" className="page__nav-link">Mijn biedingen</Link>
+
+              <Link to="/login" title="Inloggen" className="page__nav-link page__nav-link--right page__nav--icon">
+                Inloggen <FontAwesomeIcon icon={faUserLock} />
+              </Link>
             </div>
           </nav>
           <main className="page__content container box-padding">

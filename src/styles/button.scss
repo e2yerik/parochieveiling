@@ -1,0 +1,14 @@
+.btn {
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  background-color: white;
+  text-align: center;
+
+  &--primary {
+
+  }
+
+  &--secondary {
+      border: none;
+  }
+}

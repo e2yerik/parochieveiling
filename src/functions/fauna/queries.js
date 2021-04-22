@@ -1,5 +1,5 @@
 const query = require('faunadb');
-const  {Login, Let, Get, Var, Match, Index, Paginate, Lambda, Map, Create, Collection} = query;
+const  {Login, Let, Get, Var, Match, Index, Paginate, Lambda, Map, Create, Collection, Select} = query;
 
 module.exports = {
 
@@ -51,7 +51,7 @@ module.exports = {
             Create(Collection("User"), {
                 data: {
                     name, 
-                    account: Var('accountRef')
+                    account: Select(['ref'], Var('accountRef'))
                 }
             })
         )

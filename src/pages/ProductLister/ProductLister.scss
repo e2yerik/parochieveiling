@@ -8,3 +8,22 @@
   grid-template-rows: 240px;
   grid-gap: 20px;
 }
+
+.product__tile {
+  img {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  &-name {
+    font-family: "Rubik Mono One", sans-serif;
+    display: block;
+    text-decoration: none;
+    margin-bottom: 0.5rem;
+  }
+
+  &-description {
+    font-size: 1rem;
+    margin: 0;
+  }
+}
