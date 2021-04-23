@@ -1,24 +1,34 @@
-import React, { MouseEventHandler } from "react";
+import React, {
+  EffectCallback,
+  MouseEventHandler,
+  useEffect,
+  useState,
+} from "react";
 
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { faUserLock } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const AccountLink = () => {
-  const isLoggedIn = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     console.log({
       token,
       res: token !== process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY,
     });
-    return token && token !== process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY;
-  };
+    setIsLoggedIn(
+      !!(token && token !== process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY)
+    );
+  }, []);
 
   const handleLogout: MouseEventHandler<HTMLAnchorElement> = (_) => {
     localStorage.removeItem("token");
+    window.location.reload();
   };
 
-  if (!isLoggedIn()) {
+  if (!isLoggedIn) {
     return (
       <Link
         to="/login"
