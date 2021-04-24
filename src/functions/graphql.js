@@ -1,8 +1,8 @@
 const { ApolloServer } = require("apollo-server-lambda");
-const faunadb  = require('faunadb');
+const faunadb = require("faunadb");
 const { login } = require("./fauna/queries");
-const fqlQueries = require('./fauna/queries');
-const { flattenDataKeys } = require('./fauna/util');
+const fqlQueries = require("./fauna/queries");
+const { flattenDataKeys } = require("./fauna/util");
 
 const typeDefs = `
 type Account {
@@ -107,6 +107,12 @@ type Account {
     name: String
   }
 
+  type CreateProductResponse {
+    message: String
+    description: String
+    code: String
+  }
+
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
@@ -115,79 +121,132 @@ type Account {
   type Mutation {
     login(email: String!, password: String!): LoginResponse!
     register(name: String!, email: String!, password: String!): RegisterResponse!
+    createProduct(
+      name: String!,
+      code: String!,
+      shortDescription: String,
+      longDescription: String,
+      imageUrl: String!,
+      thumbUrl: String!,
+      formattedPrice: String!,
+      price: String!
+    ): CreateProductResponse!
   }  
 `;
 
 const createClient = (secret) => new faunadb.Client({ secret });
 
 const resolvers = {
-    Query: {
-        allProducts: async (_, args,{faunaClient}) => {
-            return await faunaClient
-                .query(fqlQueries.listProducts(args.active))
-                    .then(res => flattenDataKeys(res));
-        },
-
-        product: async (_, args, {faunaClient}) => {
-            return await faunaClient
-                .query(fqlQueries.getProductByRef(args.code))
-                    .then(res => flattenDataKeys(res));
-        }
+  Query: {
+    allProducts: async (_, args, { faunaClient }) => {
+      return await faunaClient
+        .query(fqlQueries.listProducts(args.active))
+        .then((res) => flattenDataKeys(res));
     },
 
-    Mutation: {
-      login: async(_, args, {faunaClient}) => {
-        const {email, password} = args;
-        console.log('Login ', {date: new Date(), email, password});
+    product: async (_, args, { faunaClient }) => {
+      return await faunaClient
+        .query(fqlQueries.getProductByRef(args.code))
+        .then((res) => flattenDataKeys(res));
+    },
+  },
 
-        return await faunaClient
-          .query(fqlQueries.login(email, password))
-          .then(res => {
-            return {secret: res.secret};
-          })
-          .catch(res => {
-            console.error('failed login', res);
-            return {
-              message: res.message,
-              description: res.description
-            }
-          });
-      },
-        register: async (_, args, {faunaClient}) => {
-          const {name, email, password} = args;
-          console.log('Registering new account: ', {data: new Date(), name, email});
+  Mutation: {
+    login: async (_, args, { faunaClient }) => {
+      const { email, password } = args;
+      console.log("Login ", { date: new Date(), email, password });
 
-          return await faunaClient
-            .query(fqlQueries.register(name, email, password))            
-              .then(res => {
-                let {data} = res;
-                return {
-                  name: data.name
-                }
-              })
-              .catch(res => {
-                console.error('failed register', res);
-                return {
-                  message: res.message,
-                  description: res.description
-                }
-              });
-        }
+      return await faunaClient
+        .query(fqlQueries.login(email, password))
+        .then((res) => {
+          return { secret: res.secret };
+        })
+        .catch((res) => {
+          console.error("failed login", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
+    },
+    register: async (_, args, { faunaClient }) => {
+      const { name, email, password } = args;
+      console.log("Registering new account: ", {
+        data: new Date(),
+        name,
+        email,
+      });
+
+      return await faunaClient
+        .query(fqlQueries.register(name, email, password))
+        .then((res) => {
+          let { data } = res;
+          return {
+            name: data.name,
+          };
+        })
+        .catch((res) => {
+          console.error("failed register", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
     },
 
+    createProduct: async (_, args, { faunaClient }) => {
+      const {
+        code,
+        name,
+        shortDescription,
+        longDescription,
+        imageUrl,
+        thumbUrl,
+        formattedPrice,
+        price,
+      } = args;
+
+      return await faunaClient
+        .query(
+          fqlQueries.createProduct(
+            code,
+            name,
+            shortDescription,
+            longDescription,
+            imageUrl,
+            thumbUrl,
+            formattedPrice,
+            price
+          )
+        )
+        .then((res) => {
+          console.log("registered product", { code, res });
+          return {
+            code: res.data.code,
+          };
+        })
+        .catch((res) => {
+          console.error("failed product creation", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
+    },
+  },
 };
 
 const context = (ctx) => {
-  const secret = ctx.event.headers.authorization || '';
+  const secret = ctx.event.headers.authorization || "";
 
   return {
-    faunaClient: createClient(secret)
+    faunaClient: createClient(secret),
   };
-}
+};
 const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    context,
+  typeDefs,
+  resolvers,
+  context,
 });
-  
+
 exports.handler = server.createHandler();

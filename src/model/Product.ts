@@ -1,4 +1,5 @@
 export interface ProductData {
+    longDescription: string;
     code: string;
     name: string;
     shortDescription: string;
