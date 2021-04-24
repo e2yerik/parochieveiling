@@ -78,6 +78,7 @@ module.exports = {
    * @param {*} thumbUrl
    * @param {*} formattedPrice
    * @param {*} price
+   * @param {*} priceType
    * @returns
    */
   createProduct: (
@@ -88,14 +89,16 @@ module.exports = {
     imageUrl,
     thumbUrl,
     formattedPrice,
-    price
+    price,
+    priceType
   ) => {
     return Let(
       {
         priceRef: Create(Collection("Price"), {
           data: {
-            priceValue: price,
+            value: price,
             formattedPrice,
+            type: priceType,
           },
         }),
       },

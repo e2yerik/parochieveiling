@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent, FormEventHandler } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useHistory } from "react-router";
-import { ProductData } from "../../../model/Product";
 import { FormEvent } from "react";
 
 interface CreateProductData {
@@ -11,8 +10,9 @@ interface CreateProductData {
   longDescription: string;
   imageUrl: string;
   thumbUrl: string;
-  price: number;
-  formattedPrice: string;
+
+  minPrice?: number;
+  price?: number;
 }
 export const initialState: CreateProductData = {
   name: "",
@@ -21,8 +21,6 @@ export const initialState: CreateProductData = {
   longDescription: "",
   imageUrl: "",
   thumbUrl: "",
-  price: 0,
-  formattedPrice: "",
 };
 
 const CREATE_PRODUCT = gql`
@@ -35,6 +33,7 @@ const CREATE_PRODUCT = gql`
     $thumbUrl: String!
     $formattedPrice: String!
     $price: String!
+    $priceType: String!
   ) {
     createProduct(
       name: $name
@@ -45,11 +44,18 @@ const CREATE_PRODUCT = gql`
       thumbUrl: $thumbUrl
       formattedPrice: $formattedPrice
       price: $price
+      priceType: $priceType
     ) {
       code
     }
   }
 `;
+
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("nl-NL", {
+    style: "currency",
+    currency: "EUR",
+  }).format(price);
 
 const CreateProductPage = () => {
   const history = useHistory();
@@ -69,13 +75,24 @@ const CreateProductPage = () => {
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // formData.price =
-    formData.formattedPrice = new Intl.NumberFormat("nl-NL", {
-      style: "currency",
-      currency: "EUR",
-    }).format(formData.price);
+    const variables: any = {
+      ...formData,
+    };
+    
+    if (formData.price) {
+      variables.priceType = "FIXED";
+    } else if (formData.minPrice) {
+      variables.price = formData.minPrice;
+      variables.priceType = "MIN";
+      delete variables["minPrice"];
+    }
 
-    createProduct({ variables: { ...formData } });
+    variables.formattedPrice = formatPrice(variables.price);
+
+    createProduct({
+      variables,
+    });
+
     updateFormState(initialState);
   };
 
@@ -154,7 +171,7 @@ const CreateProductPage = () => {
           />
         </label>
         <label>
-          Vanaf prijs (optioneel)
+          Vaste prijs (optioneel)
           <input
             type="text"
             value={formData.price}
@@ -163,6 +180,15 @@ const CreateProductPage = () => {
           />
         </label>
 
+        <label>
+          Vanaf prijs (optioneel)
+          <input
+            type="text"
+            value={formData.minPrice}
+            name="minPrice"
+            onChange={handleInputChange}
+          />
+        </label>
         <footer>
           <a onClick={history.goBack} className="btn btn--secondary">
             Terug

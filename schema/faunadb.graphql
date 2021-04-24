@@ -27,7 +27,8 @@ type Price {
   raw price value
   """
   value: Float!
-  # active: Boolean
+
+  type: String!
 }
 
 type AuctionBid {
@@ -88,14 +89,9 @@ type Product {
   stock: Int
 
   """
-  fixed price
+  Price
   """
-  price: Price! @relation
-
-  """
-  Minimum price for this product
-  """
-  minPrice: Price
+  price: Price!
 }
 
 type Query {

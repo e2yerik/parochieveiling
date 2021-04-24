@@ -129,7 +129,8 @@ type Account {
       imageUrl: String!,
       thumbUrl: String!,
       formattedPrice: String!,
-      price: String!
+      price: String!,
+      priceType: String!
     ): CreateProductResponse!
   }  
 `;
@@ -204,6 +205,7 @@ const resolvers = {
         thumbUrl,
         formattedPrice,
         price,
+        priceType,
       } = args;
 
       return await faunaClient
@@ -216,7 +218,8 @@ const resolvers = {
             imageUrl,
             thumbUrl,
             formattedPrice,
-            price
+            price,
+            priceType
           )
         )
         .then((res) => {
