@@ -24,7 +24,13 @@ module.exports = {
   },
 
   getProductByRef: (code) => {
-    return Get(Match(Index("product_detail_by_code"), code));
+    return Let(
+      {
+        productRef: Get(Match(Index("product_detail_by_code"), code)),
+        price: Get(Select(["data", "price"], Var("productRef"))),
+      },
+      { product: Var("productRef"), price: Var("price") }
+    );
   },
 
   // MUTATIONS
@@ -97,7 +103,7 @@ module.exports = {
         priceRef: Create(Collection("Price"), {
           data: {
             value: price,
-            formattedPrice,
+            formattedValue: formattedPrice,
             type: priceType,
           },
         }),

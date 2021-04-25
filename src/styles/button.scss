@@ -5,10 +5,15 @@
   text-align: center;
 
   &--primary {
+    border-color: var(--primary);
 
+    &:hover, &:focus {
+      background-color: var(--primary);
+      color: white;
+    }
   }
 
   &--secondary {
-      border: none;
+    border: none;
   }
 }

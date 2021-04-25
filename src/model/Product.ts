@@ -10,5 +10,6 @@ export interface ProductData {
 
 export interface PriceData {
     formattedValue: string;
-    value: number
+    value: number;
+    type: string
 }

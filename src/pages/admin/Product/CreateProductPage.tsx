@@ -51,7 +51,7 @@ const CREATE_PRODUCT = gql`
   }
 `;
 
-const formatPrice = (price: number) =>
+export const formatPrice = (price: number) =>
   new Intl.NumberFormat("nl-NL", {
     style: "currency",
     currency: "EUR",

@@ -1,6 +1,5 @@
 const { ApolloServer } = require("apollo-server-lambda");
 const faunadb = require("faunadb");
-const { login } = require("./fauna/queries");
 const fqlQueries = require("./fauna/queries");
 const { flattenDataKeys } = require("./fauna/util");
 
@@ -24,6 +23,8 @@ type Account {
     raw pric evalue
     """
     value: Float!
+
+    type: String!
   }
   
   type AuctionBid {
@@ -148,7 +149,18 @@ const resolvers = {
     product: async (_, args, { faunaClient }) => {
       return await faunaClient
         .query(fqlQueries.getProductByRef(args.code))
-        .then((res) => flattenDataKeys(res));
+        .then((res) => {
+          const rawData = flattenDataKeys(res);
+          rawData.product.price = rawData.price;
+          return rawData.product;
+        })
+        .catch((res) => {
+          console.error("failed product lookup", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
     },
   },
 

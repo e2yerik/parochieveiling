@@ -23,6 +23,11 @@
         border-color: var(--form-input-border-color-focus);
         outline: none;
       }
+
+      &[disabled] {
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
     }
   }
 

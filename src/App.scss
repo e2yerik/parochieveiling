@@ -24,6 +24,12 @@ $color-cold-dark: #2e3c56;
 
   --form-input-border-color-default: #{$color-secondary};
   --form-input-border-color-focus: #{$color-warmdark};
+
+  --primary: #{$color-primary};
+  --secondary: #{$color-secondary};
+  --ternary: #{$color-ternary};
+  --warm-dark: #{$color-warmdark};
+  --cold-dark: #{$color-cold-dark};
 }
 
 body {
@@ -56,6 +62,30 @@ a {
 
 strong {
   font-weight: 400;
+}
+p {
+  margin: 0 0 1rem;
+}
+
+.underline__title {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.mb-s {
+  margin-bottom: 1rem;
+}
+
+.mb-m {
+  margin-bottom: 1.5rem;
+}
+
+.mb-l {
+  margin-bottom: 2rem;
+}
+
+.mb-xl {
+  margin-bottom: 4rem;
 }
 
 .container {
@@ -140,4 +170,11 @@ select {
 .center-third {
   max-width: clamp(425px, 35%, 100vw);
   margin: 0 auto;
+}
+
+.page__center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 150px);
 }
