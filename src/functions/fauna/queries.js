@@ -12,6 +12,10 @@ const {
   Create,
   Collection,
   Select,
+  CurrentIdentity,
+  Now,
+  If,
+  Exists,
 } = query;
 
 module.exports = {
@@ -120,6 +124,27 @@ module.exports = {
           active: true,
         },
       })
+    );
+  },
+
+  placeBid: (code, bid) => {
+    return Let(
+      {
+        productMatch: Match(Index("product_detail_by_code"), code),
+      },
+      If(
+        Exists(Var("productMatch")),
+
+        Create(Collection("AuctionBid"), {
+          data: {
+            bidder: CurrentIdentity(),
+            priceValue: bid,
+            product: Select(["data", 0], Paginate(Var("productMatch"))),
+          },
+        }),
+
+        false
+      )
     );
   },
 };

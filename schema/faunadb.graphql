@@ -43,11 +43,6 @@ type AuctionBid {
   priceValue: Float
 
   """
-  time of bid
-  """
-  timeStamp: String
-
-  """
   product bid on
   """
   product: Product!
@@ -99,8 +94,3 @@ type Query {
   accountsByEmail(email: String!): [Account!]!
 }
 
-# type Mutation {
-#   register(name: String!, email: String!, password: String!): Account! @resolver
-#   login(email: String!, password: String!): String! @resolver
-#   # buyProduct(productId: Int!, priceValue: Int!): Boolean @resolver
-# }

@@ -114,11 +114,17 @@ type Account {
     code: String
   }
 
+
+  type PlaceBidResponse {
+    message: String
+    description: String
+    timeStamp: String  
+  }
+  
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
   }
-  
   type Mutation {
     login(email: String!, password: String!): LoginResponse!
     register(name: String!, email: String!, password: String!): RegisterResponse!
@@ -133,7 +139,11 @@ type Account {
       price: String!,
       priceType: String!
     ): CreateProductResponse!
+
+    placeBid(code: String!, bid: String!): PlaceBidResponse
   }  
+
+  
 `;
 
 const createClient = (secret) => new faunadb.Client({ secret });
@@ -242,6 +252,27 @@ const resolvers = {
         })
         .catch((res) => {
           console.error("failed product creation", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
+    },
+
+    placeBid: async (_, args, { faunaClient }) => {
+      const { code, bid } = args;
+      console.log("place bid ", { args });
+      return await faunaClient
+        .query(fqlQueries.placeBid(code, bid))
+        .then((res) => {
+          console.log("place bid response", { code, bid, res });
+
+          return {
+            timeStamp: res.ts,
+          };
+        })
+        .catch((res) => {
+          console.error("failed place bid", res);
           return {
             message: res.message,
             description: res.description,

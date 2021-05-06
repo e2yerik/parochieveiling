@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import { RouteComponentProps, useHistory, withRouter } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { PriceData } from "../../model/Product";
 import { formatPrice } from "../admin/Product/CreateProductPage";
 import "./ProductPage.scss";
@@ -18,8 +18,16 @@ type ProductRouteParams = {
 
 type ProductPageProps = RouteComponentProps<ProductRouteParams>;
 
+const PLACE_BID = gql`
+  mutation PlaceBid($code: String!, $bid: String!) {
+    placeBid(code: $code, bid: $bid) {
+      message
+      description
+      timeStamp
+    }
+  }
+`;
 const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
-  const history = useHistory();
   const [bid, setBid] = useState<string>("");
   const [price, setPrice] = useState<PriceData>({
     value: 0,
@@ -51,8 +59,17 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
     `,
     { variables: { code: id } }
   );
+
+  const [placeBid, { data: bidData }] = useMutation(PLACE_BID);
+
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    placeBid({
+      variables: {
+        code: id,
+        bid,
+      },
+    });
   };
 
   useEffect(() => {
@@ -139,6 +156,13 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
                   </button>
                 </footer>
               </form>
+            )}
+
+            {bidData && bidData.timeStamp && (
+              <strong>Bedankt voor uw bod!</strong>
+            )}
+            {bidData && bidData.message && (
+              <strong>Uw bod is niet aangenomen!</strong>
             )}
           </div>
         </section>
