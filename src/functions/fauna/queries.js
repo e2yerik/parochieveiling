@@ -13,7 +13,6 @@ const {
   Collection,
   Select,
   CurrentIdentity,
-  Now,
   If,
   Exists,
 } = query;
@@ -142,6 +141,36 @@ module.exports = {
             product: Select(["data", 0], Paginate(Var("productMatch"))),
           },
         }),
+
+        false
+      )
+    );
+  },
+
+  getBidsForProduct: (code) => {
+    return Let(
+      {
+        productMatch: Match(Index("product_detail_by_code"), code),
+      },
+      If(
+        Exists(Var("productMatch")),
+        
+        Map(
+          Select(
+            ["data"],
+            Select(
+              ["data", 0],
+              Map(
+                Paginate(Var("productMatch")),
+                Lambda(
+                  ["ref"],
+                  Paginate(Match(Index("product_bids"), Var("ref")))
+                )
+              )
+            )
+          ),
+          Lambda("auctionRef", Get(Var("auctionRef")))
+        ),
 
         false
       )

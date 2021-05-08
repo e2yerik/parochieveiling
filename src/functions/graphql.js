@@ -262,6 +262,40 @@ const resolvers = {
     placeBid: async (_, args, { faunaClient }) => {
       const { code, bid } = args;
       console.log("place bid ", { args });
+
+      let canPlaceBid = false;
+
+      await faunaClient
+        .query(fqlQueries.getBidsForProduct(code))
+        .then((res) => {
+          const currentBid = parseFloat(bid);
+          console.log("response bids", { res: res, currentBid });
+
+          const bigBids = res.filter(
+            (r) => parseFloat(r.data.priceValue) > currentBid
+          );
+
+          console.log("found higher bids", {
+            bigBids: bigBids.map((r) => r.data.priceValue),
+          });
+
+          canPlaceBid = bigBids == undefined || bigBids.length == 0;
+        })
+        .catch((res) => {
+          console.error("failed place bid", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
+
+      if (!canPlaceBid) {
+        return {
+          message: "Overboden",
+          description:
+            "Er is al een beter bod uitgebracht. Probeer het opnieuw met een hoger bod",
+        };
+      }
       return await faunaClient
         .query(fqlQueries.placeBid(code, bid))
         .then((res) => {

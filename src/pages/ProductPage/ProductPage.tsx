@@ -158,11 +158,14 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
               </form>
             )}
 
-            {bidData && bidData.timeStamp && (
+            {bidData && bidData.placeBid.timeStamp && (
               <strong>Bedankt voor uw bod!</strong>
             )}
-            {bidData && bidData.message && (
-              <strong>Uw bod is niet aangenomen!</strong>
+            {bidData && bidData.placeBid.message && (
+              <>
+                <h2>{bidData.placeBid.message}</h2>
+                <p>{bidData.placeBid.description}</p>
+              </>
             )}
           </div>
         </section>
