@@ -13,6 +13,8 @@ interface CreateProductData {
 
   minPrice?: number;
   price?: number;
+
+  step: number;
 }
 export const initialState: CreateProductData = {
   name: "",
@@ -21,6 +23,7 @@ export const initialState: CreateProductData = {
   longDescription: "",
   imageUrl: "",
   thumbUrl: "",
+  step: 10,
 };
 
 const CREATE_PRODUCT = gql`
@@ -78,7 +81,7 @@ const CreateProductPage = () => {
     const variables: any = {
       ...formData,
     };
-    
+
     if (formData.price) {
       variables.priceType = "FIXED";
     } else if (formData.minPrice) {
@@ -93,7 +96,10 @@ const CreateProductPage = () => {
       variables,
     });
 
-    updateFormState(initialState);
+    // todo reset form state
+    // updateFormState({
+
+    // }});
   };
 
   return (
@@ -189,6 +195,17 @@ const CreateProductPage = () => {
             onChange={handleInputChange}
           />
         </label>
+
+        <label>
+          Stap prijs bod (optioneel)
+          <input
+            type="number"
+            value={formData.step}
+            name="step"
+            onChange={handleInputChange}
+          />
+        </label>
+
         <footer>
           <a onClick={history.goBack} className="btn btn--secondary">
             Terug

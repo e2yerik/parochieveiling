@@ -15,6 +15,7 @@ const {
   CurrentIdentity,
   If,
   Exists,
+  And,
 } = query;
 
 module.exports = {
@@ -36,9 +37,28 @@ module.exports = {
     );
   },
 
+  getProductBidByProductCode: (code) => {
+    return Let(
+      {
+        productMatch: Match(Index("product_detail_by_code"), code),
+      },
+      If(
+        Exists(Var("productMatch")),
+
+        Paginate(
+          Match(
+            Index("product_bids_by_code"),
+            Select(["data", 0], Paginate(Var("productMatch")))
+          )
+        ),  
+        false
+      )
+    );
+  },
+
   // MUTATIONS
   /**
-   * Create FQL tatement for login
+   * Create FQL statement for login
    * @param {String} email
    * @param {String} password
    * @returns
@@ -154,7 +174,7 @@ module.exports = {
       },
       If(
         Exists(Var("productMatch")),
-        
+
         Map(
           Select(
             ["data"],

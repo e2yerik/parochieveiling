@@ -124,7 +124,9 @@ type Account {
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
+    productBid(code: String): Price
   }
+
   type Mutation {
     login(email: String!, password: String!): LoginResponse!
     register(name: String!, email: String!, password: String!): RegisterResponse!
@@ -166,6 +168,39 @@ const resolvers = {
         })
         .catch((res) => {
           console.error("failed product lookup", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
+    },
+
+    /**
+     * Give all bids related to product
+     * @param {*} _
+     * @param {*} args contains code attribute
+     * @param {*} param2
+     * @returns
+     */
+    productBid: async (_, args, { faunaClient }) => {
+      console.log("find bids", { code: args.code });
+      return await faunaClient
+        .query(fqlQueries.getProductBidByProductCode(args.code))
+        .then((res) => {
+          const rawData = flattenDataKeys(res);
+          console.log("res", { rawData });
+
+          // rawData.product.price = rawData.price;
+          if (rawData) {
+            return {
+              value: Math.max(...rawData.map((bid) => bid[1])),
+              formattedValue: "",
+            };
+          }
+          return null;
+        })
+        .catch((res) => {
+          console.error("failed bid lookup", res);
           return {
             message: res.message,
             description: res.description,

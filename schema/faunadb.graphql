@@ -54,7 +54,7 @@ type Product {
   available: Boolean
 
   code: String!
-  name: String!
+    name: String!
 
   """
   short description < 80 characters

@@ -27,6 +27,16 @@ const PLACE_BID = gql`
     }
   }
 `;
+
+const HIGHEST_BID = gql`
+  query HighestBid($code: String) {
+    productBid(code: $code) {
+      value
+      formattedValue
+    }
+  }
+`;
+
 const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
   const [bid, setBid] = useState<string>("");
   const [price, setPrice] = useState<PriceData>({
@@ -62,6 +72,11 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
 
   const [placeBid, { data: bidData }] = useMutation(PLACE_BID);
 
+  const { data: highestBidData } = useQuery(HIGHEST_BID, {
+    variables: { code: id },
+  });
+  const [currentBid, setCurrentBid] = useState({} as PriceData);
+
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     placeBid({
@@ -78,6 +93,13 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
     }
   }, [data?.product]);
 
+  useEffect(() => {
+    if (highestBidData?.productBid) {
+      const price = highestBidData?.productBid;
+      setCurrentBid(price);
+    }
+  }, [highestBidData?.productBid]);
+
   const onChangeBid: ChangeEventHandler = (
     event: ChangeEvent<HTMLSelectElement>
   ) => {
@@ -88,6 +110,13 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
       setBid("");
     }
   };
+
+  let currentPrice: number;
+  if (currentBid) {
+    currentPrice = currentBid.value
+  } else {
+    currentPrice = price.value;
+  }
 
   return (
     <>
@@ -114,7 +143,14 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
 
             {price?.type == "MIN" && (
               <div className="price__panel mb-xl">
-                <strong>Bieden vanaf {price.formattedValue}</strong>
+                <strong>
+                  {!currentBid && (
+                    <>Bieden vanaf {formatPrice(price.value)}</>
+                  )}
+                  {currentBid && (
+                    <>Hoogste bod {formatPrice(currentBid.value)}</>
+                  )}
+                </strong>
 
                 <form onSubmit={onSubmit} className="form">
                   <label>
@@ -122,7 +158,7 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
                     <select value={bid} onChange={onChangeBid}>
                       <option value="-1">&euro;&euro;&euro;</option>
                       {[10, 20, 30, 40, 50].map((val) => (
-                        <option key={val} value={price.value + val}>
+                        <option key={val} value={currentPrice + val}>
                           + {val} &euro;
                         </option>
                       ))}
