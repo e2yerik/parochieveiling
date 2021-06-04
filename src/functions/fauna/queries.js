@@ -15,11 +15,33 @@ const {
   CurrentIdentity,
   If,
   Exists,
-  And,
+  Update,
 } = query;
 
 module.exports = {
   // return query to get all active product listings
+
+  allProducts: () => {
+    return Map(
+      Paginate(Match(Index("allProducts"))),
+      Lambda(
+        "productRef",
+
+        Let(
+          {
+            productRef: Get(Var("productRef")),
+            price: Get(Select(["data", "price"], Var("productRef"))),
+          },
+          { product: Var("productRef"), price: Var("price") }
+        )
+      )
+    );
+  },
+
+  getProduct: (productRef) => {
+    return Get(productRef);
+  },
+
   listProducts: (active) => {
     return Map(
       Paginate(Match(Index("product_lister_active"), active)),
@@ -50,7 +72,7 @@ module.exports = {
             Index("product_bids_by_code"),
             Select(["data", 0], Paginate(Var("productMatch")))
           )
-        ),  
+        ),
         false
       )
     );
@@ -74,9 +96,10 @@ module.exports = {
    * @param {String} name
    * @param {String} email
    * @param {String} password
+   * @param {String} address
    * @returns
    */
-  register: (name, email, password) => {
+  register: (name, email, password, address) => {
     return Let(
       {
         accountRef: Create(Collection("Account"), {
@@ -91,6 +114,7 @@ module.exports = {
       Create(Collection("User"), {
         data: {
           name,
+          address,
           account: Select(["ref"], Var("accountRef")),
         },
       })
@@ -119,7 +143,8 @@ module.exports = {
     thumbUrl,
     formattedPrice,
     price,
-    priceType
+    priceType,
+    step
   ) => {
     return Let(
       {
@@ -141,8 +166,28 @@ module.exports = {
           thumbUrl,
           price: Select(["ref"], Var("priceRef")),
           active: true,
+          step,
         },
       })
+    );
+  },
+
+  linkProduct: (ref, parentProductCode) => {
+    return Let(
+      {
+        parentMatch: Match(Index("product_detail_by_code"), parentProductCode),
+      },
+      If(
+        Exists(Var("parentMatch")),
+
+        Update(ref, {
+          data: {
+            parentProduct: Select(["data", 0], Paginate(Var("parentMatch"))),
+          },
+        }),
+
+        false
+      )
     );
   },
 

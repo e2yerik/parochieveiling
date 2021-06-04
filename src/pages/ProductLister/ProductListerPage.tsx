@@ -29,6 +29,9 @@ const GET_PRODUCTS = gql`
       price {
         formattedValue
       }
+      parentProduct {
+        code
+      }
     }
   }
 `;
@@ -64,22 +67,22 @@ const ProductListerPage: React.FC<ProductListProps> = () => {
       <ul className="product__list">
         {data &&
           data.allProducts &&
-          data.allProducts.map((product: ProductData) => (
-            <li key={product.code}>
-              <Link to={`/kavel/${product.code}`} className="product__tile">
-                {/* {product.thumbUrl && (
-                    <img src={product.thumbUrl} height="240" />
-                  )} */}
+          data.allProducts
+            .filter((product: ProductData) => product.parentProduct == null)
+            .map((product: ProductData) => (
+              <li key={product.code}>
+                <Link to={`/kavel/${product.code}`} className="product__tile">
+                  <strong className="product__tile-name">
+                    {product.code} - {product.name}
+                  </strong>
+                  <p className="product__tile-description">
+                    {product.shortDescription}
+                  </p>
 
-                <strong className="product__tile-name">{product.code} - {product.name}</strong>
-                <p className="product__tile-description">
-                  {product.shortDescription}
-                </p>
-
-                {product.price && <span>{product.price.formattedValue}</span>}
-              </Link>
-            </li>
-          ))}
+                  {product.price && <span>{product.price.formattedValue}</span>}
+                </Link>
+              </li>
+            ))}
       </ul>
     </>
   );

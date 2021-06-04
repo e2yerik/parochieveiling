@@ -10,7 +10,7 @@
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr 20rem;
+    grid-template-rows: 1fr minmax(20rem, auto);
     grid-template-areas:
       "title title"
       "pimage buy";

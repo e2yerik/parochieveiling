@@ -1,16 +1,12 @@
-import React, {
-  ChangeEvent,
-  ChangeEventHandler,
-  FormEvent,
-  FormEventHandler,
-  useEffect,
-  useState,
-} from "react";
-import { RouteComponentProps, useHistory, withRouter } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
-import { PriceData } from "../../model/Product";
-import { formatPrice } from "../admin/Product/CreateProductPage";
+import React, { useState } from "react";
+import { RouteComponentProps, withRouter } from "react-router-dom";
+import { gql, useQuery } from "@apollo/client";
+import AddtoCartForm from "./components/AddToCartForm";
+import GlobalMessage from "../../components/GlobalMessage";
+
 import "./ProductPage.scss";
+import { Message } from "../../model/Message";
+import { ProductData } from "../../model/Product";
 
 type ProductRouteParams = {
   id: string;
@@ -18,33 +14,7 @@ type ProductRouteParams = {
 
 type ProductPageProps = RouteComponentProps<ProductRouteParams>;
 
-const PLACE_BID = gql`
-  mutation PlaceBid($code: String!, $bid: String!) {
-    placeBid(code: $code, bid: $bid) {
-      message
-      description
-      timeStamp
-    }
-  }
-`;
-
-const HIGHEST_BID = gql`
-  query HighestBid($code: String) {
-    productBid(code: $code) {
-      value
-      formattedValue
-    }
-  }
-`;
-
 const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
-  const [bid, setBid] = useState<string>("");
-  const [price, setPrice] = useState<PriceData>({
-    value: 0,
-    formattedValue: "",
-    type: "FIXED",
-  });
-
   const {
     match: {
       params: { id },
@@ -64,147 +34,80 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
             type
           }
           imageUrl
+          relatedProducts {
+            code
+            price {
+              formattedValue
+              value
+              type
+            }
+            step
+          }
         }
       }
     `,
     { variables: { code: id } }
   );
 
-  const [placeBid, { data: bidData }] = useMutation(PLACE_BID);
-
-  const { data: highestBidData } = useQuery(HIGHEST_BID, {
-    variables: { code: id },
+  const [message, showMessage] = useState<Message>({
+    message: "",
+    type: "",
   });
-  const [currentBid, setCurrentBid] = useState({} as PriceData);
-
-  const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-    placeBid({
-      variables: {
-        code: id,
-        bid,
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (data?.product?.price) {
-      setPrice(data.product.price);
-    }
-  }, [data?.product]);
-
-  useEffect(() => {
-    if (highestBidData?.productBid) {
-      const price = highestBidData?.productBid;
-      setCurrentBid(price);
-    }
-  }, [highestBidData?.productBid]);
-
-  const onChangeBid: ChangeEventHandler = (
-    event: ChangeEvent<HTMLSelectElement>
-  ) => {
-    const value = event.currentTarget.value;
-    if (value !== "-1") {
-      setBid(value);
-    } else {
-      setBid("");
-    }
-  };
-
-  let currentPrice: number;
-  if (currentBid) {
-    currentPrice = currentBid.value
-  } else {
-    currentPrice = price.value;
-  }
 
   return (
     <>
       {data && data.product && (
-        <section className="product__grid">
-          <div className="product__grid-title">
-            <h1 className="mb-s">{data.product.name}</h1>
-            <p>Kavelnummer: {data.product.code}</p>
-          </div>
+        <>
+          {message?.message && <GlobalMessage message={message} />}
 
-          <img src={data.product.imageUrl} className="product__grid-image" />
+          <section className="product__grid">
+            <div className="product__grid-title">
+              <h1 className="mb-s">{data.product.name}</h1>
+              <p>Kavelnummer: {data.product.code}</p>
+            </div>
 
-          <div className="product__grid-buy">
-            {data.product.longDescription && (
-              <div>
-                <strong className="underline__title mb-s">Omschrijving</strong>
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: data.product.longDescription,
-                  }}
-                ></div>
-              </div>
+            {data.product.imageUrl && (
+              <img
+                src={data.product.imageUrl}
+                className="product__grid-image"
+              />
             )}
 
-            {price?.type == "MIN" && (
-              <div className="price__panel mb-xl">
-                <strong>
-                  {!currentBid && (
-                    <>Bieden vanaf {formatPrice(price.value)}</>
-                  )}
-                  {currentBid && (
-                    <>Hoogste bod {formatPrice(currentBid.value)}</>
-                  )}
-                </strong>
+            <div className="product__grid-buy">
+              {data.product.longDescription && (
+                <div className="mb-l">
+                  <strong className="underline__title mb-s">
+                    Omschrijving
+                  </strong>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: data.product.longDescription,
+                    }}
+                  ></div>
+                </div>
+              )}
 
-                <form onSubmit={onSubmit} className="form">
-                  <label>
-                    Bod verhogen met
-                    <select value={bid} onChange={onChangeBid}>
-                      <option value="-1">&euro;&euro;&euro;</option>
-                      {[10, 20, 30, 40, 50].map((val) => (
-                        <option key={val} value={currentPrice + val}>
-                          + {val} &euro;
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+              {data.product.relatedProducts?.map((rp: ProductData) => (
+                <div key={`addtocartform-${rp.code}`}>
+                  <h3>{rp.code}</h3>
+                  <AddtoCartForm
+                    product={rp}
+                    onMessage={(message, type) =>
+                      showMessage({ message, type })
+                    }
+                  />
+                </div>
+              ))}
 
-                  {bid && (
-                    <strong>Jouw bod: {formatPrice(parseFloat(bid))}</strong>
-                  )}
-                  <footer>
-                    <div></div>
-                    <button type="submit" className="btn btn--primary">
-                      Bod uitbrengen!
-                    </button>
-                  </footer>
-                </form>
-              </div>
-            )}
-
-            {price?.type == "FIXED" && (
-              <form onSubmit={onSubmit} className="form">
-                <label>
-                  Vaste prijs
-                  <input type="number" value={price.value} disabled={true} />
-                </label>
-
-                <footer>
-                  <div></div>
-                  <button type="submit" className="btn btn--primary">
-                    Kopen!
-                  </button>
-                </footer>
-              </form>
-            )}
-
-            {bidData && bidData.placeBid.timeStamp && (
-              <strong>Bedankt voor uw bod!</strong>
-            )}
-            {bidData && bidData.placeBid.message && (
-              <>
-                <h2>{bidData.placeBid.message}</h2>
-                <p>{bidData.placeBid.description}</p>
-              </>
-            )}
-          </div>
-        </section>
+              {!data.product.relatedProducts && (
+                <AddtoCartForm
+                  product={data.product}
+                  onMessage={(message, type) => showMessage({ message, type })}
+                />
+              )}
+            </div>
+          </section>
+        </>
       )}
     </>
   );

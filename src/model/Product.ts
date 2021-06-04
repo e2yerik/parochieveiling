@@ -6,6 +6,9 @@ export interface ProductData {
     imageUrl: string;
     thumbUrl: string;
     price: PriceData
+    step: number;
+
+    parentProduct: ProductData;
 }
 
 export interface PriceData {

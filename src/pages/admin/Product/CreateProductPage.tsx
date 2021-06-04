@@ -14,8 +14,10 @@ interface CreateProductData {
   minPrice?: number;
   price?: number;
 
-  step: number;
+  step: string;
+  parentProductCode: string;
 }
+
 export const initialState: CreateProductData = {
   name: "",
   code: "",
@@ -23,7 +25,8 @@ export const initialState: CreateProductData = {
   longDescription: "",
   imageUrl: "",
   thumbUrl: "",
-  step: 10,
+  step: "10",
+  parentProductCode: "",
 };
 
 const CREATE_PRODUCT = gql`
@@ -37,6 +40,8 @@ const CREATE_PRODUCT = gql`
     $formattedPrice: String!
     $price: String!
     $priceType: String!
+    $parentProductCode: String
+    $step: Int
   ) {
     createProduct(
       name: $name
@@ -48,6 +53,8 @@ const CREATE_PRODUCT = gql`
       formattedPrice: $formattedPrice
       price: $price
       priceType: $priceType
+      parentProductCode: $parentProductCode
+      step: $step
     ) {
       code
     }
@@ -91,6 +98,7 @@ const CreateProductPage = () => {
     }
 
     variables.formattedPrice = formatPrice(variables.price);
+    variables.step = parseInt(formData.step, 10);
 
     createProduct({
       variables,
@@ -127,6 +135,17 @@ const CreateProductPage = () => {
             onChange={handleInputChange}
           />
         </label>
+
+        <label>
+          Hoofdprodukt code (optioneel):
+          <input
+            type="text"
+            value={formData.parentProductCode}
+            name="parentProductCode"
+            onChange={handleInputChange}
+          />
+        </label>
+
         <label>
           Naam:
           <input

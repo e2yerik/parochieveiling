@@ -14,6 +14,7 @@ export interface CreateUserProps {}
 
 interface CreateUserFormData {
   name: string;
+  address: string;
   email: string;
   password: string;
 }
@@ -32,14 +33,14 @@ export const initialState: CreateUserFormData = {
   name: "",
   email: "",
   password: "",
+  address: "",
 };
 
 const CreateUserPage: React.FC<CreateUserProps> = () => {
   const history = useHistory();
   const [createUser, { data }] = useMutation(CREATE_USER);
-  const [formData, updateFormState] = useState<CreateUserFormData>(
-    initialState
-  );
+  const [formData, updateFormState] =
+    useState<CreateUserFormData>(initialState);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     updateFormState((prevProps) => ({
@@ -56,6 +57,7 @@ const CreateUserPage: React.FC<CreateUserProps> = () => {
     createUser({
       variables: {
         name: formData.name,
+        address: formData.address,
         email: formData.email,
         password: formData.password,
       },
@@ -87,6 +89,16 @@ const CreateUserPage: React.FC<CreateUserProps> = () => {
             type="text"
             value={formData.name}
             name="name"
+            onChange={handleInputChange}
+          />
+        </label>
+
+        <label>
+          Straatnaam + huisnummer:{" "}
+          <input
+            type="text"
+            value={formData.address}
+            name="address"
             onChange={handleInputChange}
           />
         </label>

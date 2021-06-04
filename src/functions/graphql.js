@@ -10,6 +10,7 @@ type Account {
   
   type User {
     name: String!
+    address: String!
     account: Account!
   }
   
@@ -58,8 +59,12 @@ type Account {
     available: Boolean
   
     code: String!
-    name: String!
-  
+    name: String
+    step: Int
+    parentProduct: Product
+    relatedProducts: [Product]
+
+
     """
     short description < 80 characters
     """
@@ -79,11 +84,6 @@ type Account {
     product list thumbnail
     """
     thumbUrl: String!
-  
-    """
-    positive integer available products for sale. Stock is reduced when user places bid
-    """
-    stock: Int
   
     """
     fixed price
@@ -140,6 +140,8 @@ type Account {
       formattedPrice: String!,
       price: String!,
       priceType: String!
+      step: Int
+      parentProductCode: String
     ): CreateProductResponse!
 
     placeBid(code: String!, bid: String!): PlaceBidResponse
@@ -155,15 +157,63 @@ const resolvers = {
     allProducts: async (_, args, { faunaClient }) => {
       return await faunaClient
         .query(fqlQueries.listProducts(args.active))
-        .then((res) => flattenDataKeys(res));
+        .then(async (res) => {
+          const result = flattenDataKeys(res);
+          const enriched = await result.map(async (p) => {
+            if (p.parentProduct) {
+              p.parentProduct = await faunaClient
+                .query(fqlQueries.getProduct(p.parentProduct))
+                .then((res) => flattenDataKeys(res))
+                .catch((res) => {
+                  console.log("failed parentProduct", { res });
+                  return null;
+                });
+            }
+
+            return p;
+          });
+
+          return enriched;
+        })
+        .catch((res) => {
+          console.error("failed product lookup", res);
+          return {
+            message: res.message,
+            description: res.description,
+          };
+        });
     },
 
     product: async (_, args, { faunaClient }) => {
       return await faunaClient
         .query(fqlQueries.getProductByRef(args.code))
-        .then((res) => {
+        .then(async (res) => {
           const rawData = flattenDataKeys(res);
           rawData.product.price = rawData.price;
+
+          rawData.product.relatedProducts = await faunaClient
+            .query(fqlQueries.allProducts())
+            .then((res) => {
+              const all = flattenDataKeys(res);
+              console.log("all", { all });
+              const fi = all
+                .filter(
+                  ({ product }) =>
+                    `${product.parentProduct}` === `${rawData.product.ref}`
+                )
+                .map(({ product, price }) => {
+                  return {
+                    ...product,
+                    price,
+                  };
+                });
+
+              console.log("fi", { fi });
+
+              return fi;
+            });
+
+          console.log("related", rawData.product.relatedProducts);
           return rawData.product;
         })
         .catch((res) => {
@@ -228,19 +278,20 @@ const resolvers = {
         });
     },
     register: async (_, args, { faunaClient }) => {
-      const { name, email, password } = args;
+      const { name, email, password, address } = args;
       console.log("Registering new account: ", {
         data: new Date(),
         name,
         email,
+        address,
       });
 
       return await faunaClient
-        .query(fqlQueries.register(name, email, password))
+        .query(fqlQueries.register(name, email, password, address))
         .then((res) => {
           let { data } = res;
           return {
-            name: data.name,
+            name: `${data.name} (${data.address})`,
           };
         })
         .catch((res) => {
@@ -263,6 +314,8 @@ const resolvers = {
         formattedPrice,
         price,
         priceType,
+        step,
+        parentProductCode,
       } = args;
 
       return await faunaClient
@@ -276,11 +329,33 @@ const resolvers = {
             thumbUrl,
             formattedPrice,
             price,
-            priceType
+            priceType,
+            step
           )
         )
-        .then((res) => {
+        .then(async (res) => {
           console.log("registered product", { code, res });
+
+          if (parentProductCode) {
+            console.log("rlinking", { parentProductCode });
+
+            return await faunaClient
+              .query(fqlQueries.linkProduct(res.ref, parentProductCode))
+              .then((pr) => {
+                console.log("linked", { pr });
+                return {
+                  code: pr.data.code,
+                };
+              })
+              .catch((res) => {
+                console.error("failed product link", res);
+                return {
+                  message: res.message,
+                  description: res.description,
+                };
+              });
+          }
+
           return {
             code: res.data.code,
           };

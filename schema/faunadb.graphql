@@ -5,17 +5,9 @@ type Account {
 
 type User {
   name: String!
+  address: String!
   account: Account! @relation
 }
-
-# type AuctionPiece {
-#   name: String
-#   price: Price
-#   """
-#   list of all placed bids
-#   """
-#   bids: [AuctionBid!] @relation
-# }
 
 type Price {
   """
@@ -46,18 +38,23 @@ type AuctionBid {
   product bid on
   """
   product: Product!
-
-  # auctionPiece: AuctionPiece @relation
 }
 
 type Product {
+  """
+  Optional parent product, used for multiple product bids
+  """
+  parentProduct: Product
+
   available: Boolean
 
   code: String!
-    name: String!
+  name: String!
+
+  step: Int
 
   """
-  short description < 80 characters
+  short description
   """
   shortDescription: String!
 
@@ -76,13 +73,6 @@ type Product {
   """
   thumbUrl: String
 
-  # auctionPiece: AuctionPiece @relation
-
-  """
-  positive integer available products for sale. Stock is reduced when user places bid
-  """
-  stock: Int
-
   """
   Price
   """
@@ -93,4 +83,3 @@ type Query {
   allProducts: [Product]
   accountsByEmail(email: String!): [Account!]!
 }
-
