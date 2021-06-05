@@ -97,7 +97,7 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
                 </div>
               ))}
 
-              {!data.product.relatedProducts && (
+              {data.product.relatedProducts?.length == 0 && (
                 <AddtoCartForm
                   product={data.product}
                   onMessage={(message, type) => showMessage({ message, type })}
