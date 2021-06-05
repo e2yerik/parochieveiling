@@ -16,6 +16,8 @@ const {
   If,
   Exists,
   Update,
+  Epoch,
+  Format,
 } = query;
 
 module.exports = {
@@ -245,7 +247,21 @@ module.exports = {
   getUserBids: () => {
     return Map(
       Paginate(Match(Index("bids"), CurrentIdentity())),
-      Lambda("ref", Get(Var("ref")))
+      Lambda(
+        "ref",
+        Let(
+          {
+            iRef: Get(Var("ref")),
+            productRef: Get(Select(["data", "product"], Var("iRef"))),
+            timeStamp: Epoch(Select("ts", Var("iRef")), "microsecond"),
+          },
+          {
+            product: Var("productRef"),
+            timeStamp: Format("%t", Var("timeStamp")),
+            priceValue: Select(["data", "priceValue"], Var("iRef")),
+          }
+        )
+      )
     );
   },
 };

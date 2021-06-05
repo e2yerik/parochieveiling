@@ -121,11 +121,17 @@ type Account {
     timeStamp: String  
   }
   
+  type AuctionBidResponse {
+    product: Product
+    timeStamp: String
+    priceValue: String
+  }
+
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
     productBid(code: String): Price
-    myBids: [AuctionBid]
+    myBids: [AuctionBidResponse]
   }
 
   type Mutation {
@@ -160,9 +166,8 @@ const resolvers = {
       return await faunaClient
         .query(fqlQueries.getUserBids())
         .then((res) => {
-          console.log("raw", { res });
           const results = flattenDataKeys(res);
-          console.log("results", { results });
+          console.log("bid results", { results });
 
           return results;
         })

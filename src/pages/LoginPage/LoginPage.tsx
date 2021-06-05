@@ -3,7 +3,7 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import "../../styles/form.scss";
 
 import { gql, useMutation } from "@apollo/client";
-import { Link, Redirect, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Message } from "../../model/Message";
 import GlobalMessage from "../../components/GlobalMessage";
 
@@ -31,7 +31,6 @@ export const initialState: LoginFormData = {
 
 const LoginPage: React.FC<CreateUserProps> = () => {
   const [login, { data }] = useMutation(LOGIN_USER);
-  useLocation();
   const [formData, updateFormState] = useState<LoginFormData>(initialState);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +44,10 @@ const LoginPage: React.FC<CreateUserProps> = () => {
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    showMessage({
+      message: "",
+      type: "",
+    });
 
     login({
       variables: {

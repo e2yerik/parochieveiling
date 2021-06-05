@@ -1,32 +1,35 @@
-import React from 'react';
+import React from "react";
 
-import './App.scss';
-import './styles/button.scss';
+import "./App.scss";
+import "./styles/button.scss";
+import "./styles/table.scss";
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { faHome } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import HomeComponent from './pages/HomePage';
-import ProductPageComponent from './pages/ProductPage/ProductPage';
-import ProductListerComponent from './pages/ProductLister/ProductListerPage';
+import HomeComponent from "./pages/HomePage";
+import ProductPageComponent from "./pages/ProductPage/ProductPage";
+import ProductListerComponent from "./pages/ProductLister/ProductListerPage";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import LoginPage from './pages/LoginPage/LoginPage';
-import AccountLink from './components/AccountLink';
+import LoginPage from "./pages/LoginPage/LoginPage";
+import AccountLink from "./components/AccountLink";
 
-import AdminPage from './pages/admin/Index';
-import CreateProductPage from './pages/admin/Product/CreateProductPage';
-import CreateUserPage from './pages/admin/User/CreateUserPage';
+import AdminPage from "./pages/admin/Index";
+import CreateProductPage from "./pages/admin/Product/CreateProductPage";
+import CreateUserPage from "./pages/admin/User/CreateUserPage";
 
-import MyBidsComponent from './pages/MyBids/MyBidsPage';
+import MyBidsComponent from "./pages/MyBids/MyBidsPage";
 
 const client = new ApolloClient({
   uri: "/api/graphql",
   cache: new InMemoryCache(),
   headers: {
-    authorization: localStorage.getItem('token') || process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY
-  }
+    authorization:
+      localStorage.getItem("token") ||
+      process.env.REACT_APP_BOOTSTRAP_FAUNADB_KEY,
+  },
 });
 
 function App() {
@@ -36,9 +39,27 @@ function App() {
         <Router>
           <nav className="page__nav">
             <div className="container box-padding">
-              <Link to="/" title="Hoofdpagina" className="page__nav-link page__nav-link--icon"><FontAwesomeIcon icon={faHome} /></Link>
-              <Link to="/kavels" title="Alle actieve kavels" className="page__nav-link">Kavels</Link>
-              <Link to="/biedingen" title="Al je biedingen" className="page__nav-link">Mijn biedingen</Link>
+              <Link
+                to="/"
+                title="Hoofdpagina"
+                className="page__nav-link page__nav-link--icon"
+              >
+                <FontAwesomeIcon icon={faHome} />
+              </Link>
+              <Link
+                to="/kavels"
+                title="Alle actieve kavels"
+                className="page__nav-link"
+              >
+                Kavels
+              </Link>
+              <Link
+                to="/biedingen"
+                title="Al je biedingen"
+                className="page__nav-link"
+              >
+                Mijn biedingen
+              </Link>
               <AccountLink />
             </div>
           </nav>
@@ -56,9 +77,7 @@ function App() {
           </main>
 
           <footer className="page__footer">
-            <p>
-              Gemaakt voor de Lutjebroeker Parochieveiling 2021
-            </p>
+            <p>Gemaakt voor de Lutjebroeker Parochieveiling 2021</p>
           </footer>
         </Router>
       </ApolloProvider>

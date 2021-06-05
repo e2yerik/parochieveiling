@@ -1,0 +1,17 @@
+.table {
+  width: 100%;
+
+  thead th,
+  tbody td {
+    text-align: left;
+
+    padding: 1rem;
+  }
+  tr {
+    border-bottom: 1px solid var(--primary);
+  }
+
+  .right {
+      text-align: right;
+  }
+}
