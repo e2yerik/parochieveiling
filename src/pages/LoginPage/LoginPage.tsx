@@ -1,9 +1,11 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
+import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 import "../../styles/form.scss";
 
 import { gql, useMutation } from "@apollo/client";
 import { Link, Redirect, useLocation } from "react-router-dom";
+import { Message } from "../../model/Message";
+import GlobalMessage from "../../components/GlobalMessage";
 
 export interface CreateUserProps {}
 
@@ -54,21 +56,31 @@ const LoginPage: React.FC<CreateUserProps> = () => {
     return false;
   };
 
-  if (data && data.login && data.login.secret) {
-    localStorage.setItem("token", data.login.secret);
+  const [message, showMessage] = useState<Message>({
+    message: "",
+    type: "",
+  });
 
-    window.location.href = "/";
-  }
+  useEffect(() => {
+    if (data?.login?.secret) {
+      localStorage.setItem("token", data.login.secret);
+
+      window.location.href = "/";
+    } else if (data?.login?.message) {
+      console.error(data.login);
+      showMessage({
+        type: "bad",
+        message:
+          "Er is een fout opgetreden tijdens het inloggen. Probeer het opnieuw",
+      });
+    }
+  }, [data]);
 
   return (
     <div className="center-third">
       <h1>Inloggen</h1>
 
-      {data && data.login && data.login.message && (
-        <strong>
-          Fout opgetreden: {data.login.message}: {data.login.description}
-        </strong>
-      )}
+      {message?.message && <GlobalMessage message={message} />}
 
       <form onSubmit={onSubmit} className="form">
         <label>
