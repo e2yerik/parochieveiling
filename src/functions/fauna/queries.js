@@ -241,4 +241,11 @@ module.exports = {
       )
     );
   },
+
+  getUserBids: () => {
+    return Map(
+      Paginate(Match(Index("bids"), CurrentIdentity())),
+      Lambda("ref", Get(Var("ref")))
+    );
+  },
 };

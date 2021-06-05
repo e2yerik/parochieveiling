@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBeer, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { ProductData } from "../../model/Product";
 import "./ProductLister.scss";
-import { PulseLoader, ScaleLoader } from "react-spinners";
 import Loader from "../../components/Loading";
 
 export interface ProductListQueryData {

@@ -73,28 +73,26 @@ const ProductPage: React.FC<ProductPageProps> = (props: ProductPageProps) => {
               />
             )}
 
-            <div className="product__grid-buy">
-              {data.product.longDescription && (
-                <div className="mb-l">
-                  <strong className="underline__title mb-s">
-                    Omschrijving
-                  </strong>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: data.product.longDescription,
-                    }}
-                  ></div>
-                </div>
-              )}
+            {data.product.longDescription && (
+              <div className="product__grid-description mb-l">
+                <strong className="underline__title mb-s">Omschrijving</strong>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: data.product.longDescription,
+                  }}
+                ></div>
+              </div>
+            )}
 
+            <div className="product__grid-buy">
               {data.product.relatedProducts?.map((rp: ProductData) => (
                 <div key={`addtocartform-${rp.code}`}>
-                  <h3>{rp.code}</h3>
                   <AddtoCartForm
                     product={rp}
                     onMessage={(message, type) =>
                       showMessage({ message, type })
                     }
+                    beforeButtonText={rp.code}
                   />
                 </div>
               ))}

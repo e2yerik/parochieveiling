@@ -125,11 +125,12 @@ type Account {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
     productBid(code: String): Price
+    myBids: [AuctionBid]
   }
 
   type Mutation {
     login(email: String!, password: String!): LoginResponse!
-    register(name: String!, email: String!, password: String!): RegisterResponse!
+    register(name: String!, email: String!, password: String!, address: String!): RegisterResponse!
     createProduct(
       name: String!,
       code: String!,
@@ -154,7 +155,24 @@ const createClient = (secret) => new faunadb.Client({ secret });
 
 const resolvers = {
   Query: {
+    myBids: async (_, args, { faunaClient }) => {
+      console.log("mybids");
+      return await faunaClient
+        .query(fqlQueries.getUserBids())
+        .then((res) => {
+          console.log("raw", { res });
+          const results = flattenDataKeys(res);
+          console.log("results", { results });
+
+          return results;
+        })
+        .catch((err) => {
+          console.log("failed to return user bids", { err });
+        });
+    },
+
     allProducts: async (_, args, { faunaClient }) => {
+      console.log("allpr");
       return await faunaClient
         .query(fqlQueries.listProducts(args.active))
         .then(async (res) => {
@@ -280,7 +298,7 @@ const resolvers = {
     register: async (_, args, { faunaClient }) => {
       const { name, email, password, address } = args;
       console.log("Registering new account: ", {
-        data: new Date(),
+        date: new Date(),
         name,
         email,
         address,

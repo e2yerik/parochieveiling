@@ -19,6 +19,8 @@ import AdminPage from './pages/admin/Index';
 import CreateProductPage from './pages/admin/Product/CreateProductPage';
 import CreateUserPage from './pages/admin/User/CreateUserPage';
 
+import MyBidsComponent from './pages/MyBids/MyBidsPage';
+
 const client = new ApolloClient({
   uri: "/api/graphql",
   cache: new InMemoryCache(),
@@ -45,6 +47,7 @@ function App() {
             <Route path="/kavels" component={ProductListerComponent} />
             <Route path="/kavel/:id" component={ProductPageComponent} />
 
+            <Route path="/biedingen" component={MyBidsComponent} />
             <Route path="/login" component={LoginPage} />
 
             <Route path="/admin/" exact component={AdminPage} />

@@ -40,5 +40,9 @@
       justify-content: space-between;
       flex-direction: row;
     }
+    * {
+      display: flex;
+      align-items: center;
+    }
   }
 }

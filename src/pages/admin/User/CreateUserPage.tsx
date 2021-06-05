@@ -20,8 +20,18 @@ interface CreateUserFormData {
 }
 
 const CREATE_USER = gql`
-  mutation RegisterUser($name: String!, $email: String!, $password: String!) {
-    register(name: $name, email: $email, password: $password) {
+  mutation RegisterUser(
+    $name: String!
+    $email: String!
+    $password: String!
+    $address: String!
+  ) {
+    register(
+      name: $name
+      email: $email
+      password: $password
+      address: $address
+    ) {
       message
       description
       name
