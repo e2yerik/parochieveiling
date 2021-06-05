@@ -13,6 +13,9 @@ const AdminPage = () => {
         <li>
           <Link to="/admin/product/create">Product aanmaken</Link>
         </li>
+        <li>
+          <Link to="/admin/bids">Biedingen</Link>
+        </li>
       </ul>
     </>
   );
