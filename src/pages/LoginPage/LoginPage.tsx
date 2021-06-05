@@ -3,7 +3,7 @@ import React, { ChangeEvent, FormEvent, useState } from "react";
 import "../../styles/form.scss";
 
 import { gql, useMutation } from "@apollo/client";
-import { Link } from "react-router-dom";
+import { Link, Redirect, useLocation } from "react-router-dom";
 
 export interface CreateUserProps {}
 
@@ -29,6 +29,7 @@ export const initialState: LoginFormData = {
 
 const LoginPage: React.FC<CreateUserProps> = () => {
   const [login, { data }] = useMutation(LOGIN_USER);
+  useLocation();
   const [formData, updateFormState] = useState<LoginFormData>(initialState);
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +57,7 @@ const LoginPage: React.FC<CreateUserProps> = () => {
   if (data && data.login && data.login.secret) {
     localStorage.setItem("token", data.login.secret);
 
-    window.location.reload();
+    window.location.href = "/";
   }
 
   return (
