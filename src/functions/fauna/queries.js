@@ -231,7 +231,7 @@ module.exports = {
                 Paginate(Var("productMatch")),
                 Lambda(
                   ["ref"],
-                  Paginate(Match(Index("product_bids"), Var("ref")))
+                  Paginate(Match(Index("product_bids"), Var("ref")), { size: 10000 })
                 )
               )
             )
@@ -246,7 +246,7 @@ module.exports = {
 
   getUserBids: () => {
     return Map(
-      Paginate(Match(Index("bids"), CurrentIdentity())),
+      Paginate(Match(Index("bids"), CurrentIdentity()), { size: 10000 }),
       Lambda(
         "ref",
         Let(
@@ -259,6 +259,28 @@ module.exports = {
             product: Var("productRef"),
             timeStamp: Format("%t", Var("timeStamp")),
             priceValue: Select(["data", "priceValue"], Var("iRef")),
+          }
+        )
+      )
+    );
+  },
+
+  getAllUserBids: () => {
+    return Map(
+      Paginate(Match(Index("all_bids")), { size: 10000 }),
+      Lambda(
+        "ref",
+        Let(
+          {
+            iRef: Get(Var("ref")),
+            productRef: Get(Select(["data", "product"], Var("iRef"))),
+            timeStamp: Epoch(Select("ts", Var("iRef")), "microsecond"),
+          },
+          {
+            product: Var("productRef"),
+            timeStamp: Format("%t", Var("timeStamp")),
+            priceValue: Select(["data", "priceValue"], Var("iRef")),
+            bidder: Get(Select(["data", "bidder"], Var("iRef"))),
           }
         )
       )

@@ -19,6 +19,7 @@ import AccountLink from "./components/AccountLink";
 import AdminPage from "./pages/admin/Index";
 import CreateProductPage from "./pages/admin/Product/CreateProductPage";
 import CreateUserPage from "./pages/admin/User/CreateUserPage";
+import AdminBidsPage from "./pages/admin/Bids/AdminBidsPage";
 
 import MyBidsComponent from "./pages/MyBids/MyBidsPage";
 
@@ -74,6 +75,7 @@ function App() {
             <Route path="/admin/" exact component={AdminPage} />
             <Route path="/admin/user/create" component={CreateUserPage} />
             <Route path="/admin/product/create" component={CreateProductPage} />
+            <Route path="/admin/bids" component={AdminBidsPage} />
           </main>
 
           <footer className="page__footer">

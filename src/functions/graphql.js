@@ -126,12 +126,20 @@ type Account {
     timeStamp: String
     priceValue: String
   }
+  
+  type AdminAuctionBidResponse {
+    product: Product
+    timeStamp: String
+    priceValue: String
+    bidder: Account
+  }
 
   type Query {
     allProducts(active: Boolean): [Product]
     product(code: String): Product
     productBid(code: String): Price
     myBids: [AuctionBidResponse]
+    adminBids: [AdminAuctionBidResponse]
   }
 
   type Mutation {
@@ -161,6 +169,22 @@ const createClient = (secret) => new faunadb.Client({ secret });
 
 const resolvers = {
   Query: {
+    
+    adminBids: async (_, args, { faunaClient }) => {
+      console.log("adminbids");
+      return await faunaClient
+        .query(fqlQueries.getAllUserBids())
+        .then((res) => {
+          const results = flattenDataKeys(res);
+          console.log("bid results", { results });
+
+          return results;
+        })
+        .catch((err) => {
+          console.log("failed to return user bids", { err });
+        });
+    },
+
     myBids: async (_, args, { faunaClient }) => {
       console.log("mybids");
       return await faunaClient
