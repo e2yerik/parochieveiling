@@ -115,7 +115,7 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
       {price?.type == "MIN" && (
         <div className="price__panel mb-s">
           <strong className="block mb-s">
-            Kavel {props.beforeButtonText}:{" "}
+            {props.beforeButtonText && <>Kavel {props.beforeButtonText} </>}
             {!currentBid?.value && (
               <>bieden vanaf {formatPrice(currentPrice)} </>
             )}

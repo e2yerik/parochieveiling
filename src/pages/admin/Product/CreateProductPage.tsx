@@ -150,7 +150,7 @@ const CreateProductPage = () => {
       {message?.message && <GlobalMessage message={message} />}
 
       <form onSubmit={onSubmit} className="form">
-        <label>
+        {/* <label>
           Overschrijven:
           <input
             type="checkbox"
@@ -159,7 +159,7 @@ const CreateProductPage = () => {
             }}
             name="update"
           ></input>
-        </label>
+        </label> */}
         <label>
           Code:
           <input
