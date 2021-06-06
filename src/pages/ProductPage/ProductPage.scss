@@ -14,8 +14,8 @@
     grid-template-rows: repeat(3, auto);
     grid-template-areas:
       "title title"
-      "pimage _"
-      "description buy";
+      "pimage description"
+      "buy buy";
   }
 
   &-title {
@@ -34,5 +34,27 @@
 
 .price__panel {
   width: 100%;
-  max-width: 420px;
+  border: 1px solid var(--secondary);
+  padding: 0.5rem 0.5rem 0;
+
+  .block {
+    display: block;
+  }
+
+  .form {
+    margin-bottom: 0;;
+    label {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      select {
+        margin-top: 0;
+      }
+
+      > * {
+        align-self: center;
+        flex: 1;
+      }
+    }
+  }
 }

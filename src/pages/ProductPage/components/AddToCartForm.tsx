@@ -45,7 +45,8 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
     type: "FIXED",
   });
 
-  const [placeBid, { data: bidData }] = useMutation(PLACE_BID);
+  const [placeBid, { data: bidData, loading: loadingPlaceBid }] =
+    useMutation(PLACE_BID);
 
   const { data: highestBidData } = useQuery(HIGHEST_BID, {
     variables: { code: product.code },
@@ -54,6 +55,8 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
 
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
+    props.onMessage("", "");
+
     placeBid({
       variables: {
         code: product.code,
@@ -111,12 +114,18 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
     <>
       {price?.type == "MIN" && (
         <div className="price__panel mb-s">
-          <strong className="mb-m">
-            {!currentBid && <>Bieden vanaf {formatPrice(price.value)}</>}
-            {currentBid?.value && (
-              <p className="mb-s">
-                Hoogste bod {formatPrice(currentBid.value)}
-              </p>
+          <strong className="block mb-s">
+            Kavel {props.beforeButtonText}:{" "}
+            {!currentBid?.value && (
+              <>bieden vanaf {formatPrice(currentPrice)} </>
+            )}
+            {currentBid?.value > 0 && (
+              <>hoogste bod {formatPrice(currentBid.value)} </>
+            )}
+            {bid && (
+              <b style={{ color: "var(--warm-dark)" }}>
+                Jouw bod wordt dan: {formatPrice(parseFloat(bid))}
+              </b>
             )}
           </strong>
 
@@ -131,19 +140,14 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
                   </option>
                 ))}
               </select>
-            </label>
-
-            {bid && (
-              <strong className="mb-m">
-                Jouw bod: {formatPrice(parseFloat(bid))}
-              </strong>
-            )}
-            <footer>
-              <div>{props.beforeButtonText}</div>
-              <button type="submit" className="btn btn--primary">
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={bid == "" || loadingPlaceBid}
+              >
                 Bod uitbrengen!
               </button>
-            </footer>
+            </label>
           </form>
         </div>
       )}
@@ -165,16 +169,6 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
           </form>
         </div>
       )}
-
-      {/* {bidData && bidData.placeBid.timeStamp && (
-        <strong>Bedankt voor uw bod!</strong>
-      )}
-      {bidData && bidData.placeBid.message && (
-        <>
-          <h2>{bidData.placeBid.message}</h2>
-          <p>{bidData.placeBid.description}</p>
-        </>
-      )} */}
     </>
   );
 };

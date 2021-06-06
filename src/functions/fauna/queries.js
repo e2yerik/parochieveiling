@@ -174,6 +174,40 @@ module.exports = {
     );
   },
 
+  updateProduct: (
+    code,
+    name,
+    shortDescription,
+    longDescription,
+    imageUrl,
+    thumbUrl,
+    formattedPrice,
+    price,
+    priceType,
+    step
+  ) => {
+    return Let(
+      {
+        productMatch: Match(Index("product_detail_by_code"), code),
+      },
+      If(
+        Exists(Var("productMatch")),
+        Update(Select(["data", 0], Paginate(Var("productMatch"))), {
+          data: {
+            code,
+            name,
+            shortDescription,
+            longDescription,
+            imageUrl,
+            thumbUrl,
+            step,
+          },
+        }),
+        false
+      )
+    );
+  },
+
   linkProduct: (ref, parentProductCode) => {
     return Let(
       {
@@ -231,7 +265,9 @@ module.exports = {
                 Paginate(Var("productMatch")),
                 Lambda(
                   ["ref"],
-                  Paginate(Match(Index("product_bids"), Var("ref")), { size: 10000 })
+                  Paginate(Match(Index("product_bids"), Var("ref")), {
+                    size: 10000,
+                  })
                 )
               )
             )

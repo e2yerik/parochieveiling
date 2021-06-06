@@ -150,13 +150,14 @@ type Account {
       code: String!,
       shortDescription: String,
       longDescription: String,
-      imageUrl: String!,
-      thumbUrl: String!,
-      formattedPrice: String!,
-      price: String!,
-      priceType: String!
+      imageUrl: String,
+      thumbUrl: String,
+      formattedPrice: String,
+      price: String,
+      priceType: String
       step: Int
       parentProductCode: String
+      update: Boolean
     ): CreateProductResponse!
 
     placeBid(code: String!, bid: String!): PlaceBidResponse
@@ -169,7 +170,6 @@ const createClient = (secret) => new faunadb.Client({ secret });
 
 const resolvers = {
   Query: {
-    
     adminBids: async (_, args, { faunaClient }) => {
       console.log("adminbids");
       return await faunaClient
@@ -363,11 +363,17 @@ const resolvers = {
         priceType,
         step,
         parentProductCode,
+        update,
       } = args;
+
+      let productQuery = fqlQueries.createProduct;
+      if (update) {
+        productQuery = fqlQueries.updateProduct;
+      }
 
       return await faunaClient
         .query(
-          fqlQueries.createProduct(
+          productQuery(
             code,
             name,
             shortDescription,

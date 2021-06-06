@@ -1,7 +1,14 @@
-import React, { useState, ChangeEvent, FormEventHandler } from "react";
+import React, {
+  useState,
+  ChangeEvent,
+  FormEventHandler,
+  useEffect,
+} from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useHistory } from "react-router";
 import { FormEvent } from "react";
+import { Message } from "../../../model/Message";
+import GlobalMessage from "../../../components/GlobalMessage";
 
 interface CreateProductData {
   code: string;
@@ -11,8 +18,8 @@ interface CreateProductData {
   imageUrl: string;
   thumbUrl: string;
 
-  minPrice?: number;
-  price?: number;
+  minPrice?: string;
+  price?: string;
 
   step: string;
   parentProductCode: string;
@@ -27,21 +34,24 @@ export const initialState: CreateProductData = {
   thumbUrl: "",
   step: "10",
   parentProductCode: "",
+  minPrice: "",
+  price: "",
 };
 
 const CREATE_PRODUCT = gql`
   mutation CreateProduct(
     $name: String!
     $code: String!
-    $shortDescription: String!
-    $longDescription: String!
+    $shortDescription: String
+    $longDescription: String
     $imageUrl: String!
     $thumbUrl: String!
-    $formattedPrice: String!
-    $price: String!
-    $priceType: String!
+    $formattedPrice: String
+    $price: String
+    $priceType: String
     $parentProductCode: String
     $step: Int
+    $update: Boolean
   ) {
     createProduct(
       name: $name
@@ -55,6 +65,7 @@ const CREATE_PRODUCT = gql`
       priceType: $priceType
       parentProductCode: $parentProductCode
       step: $step
+      update: $update
     ) {
       code
     }
@@ -71,6 +82,13 @@ const CreateProductPage = () => {
   const history = useHistory();
   const [formData, updateFormState] = useState(initialState);
 
+  const [update, setUpdate] = useState(false);
+
+  const [message, showMessage] = useState<Message>({
+    message: "",
+    type: "",
+  });
+
   const handleInputChange = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -85,8 +103,11 @@ const CreateProductPage = () => {
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    showMessage({ type: "", message: "" });
+
     const variables: any = {
       ...formData,
+      update,
     };
 
     if (formData.price) {
@@ -99,33 +120,46 @@ const CreateProductPage = () => {
 
     variables.formattedPrice = formatPrice(variables.price);
     variables.step = parseInt(formData.step, 10);
-
     createProduct({
       variables,
     });
 
-    // todo reset form state
-    // updateFormState({
+    updateFormState(initialState);
 
-    // }});
+    setUpdate(false);
   };
+
+  useEffect(() => {
+    if (data?.createProduct?.code) {
+      showMessage({
+        type: "good",
+        message: `Product ${data.createProduct.code} aangemaakt!`,
+      });
+    } else if (data?.createProduct?.message) {
+      showMessage({
+        type: "bad",
+        message: `Fout opgetreden: ${data.createProduct.message}: ${data.createProduct.description}`,
+      });
+    }
+  }, [data]);
 
   return (
     <div className="center-third">
       <h1>Product aanmaken</h1>
 
-      {data && data.createProduct && data.createProduct.code && (
-        <strong>Product {data.createProduct.code} aangemaakt!</strong>
-      )}
-
-      {data && data.createProduct && data.createProduct.message && (
-        <strong>
-          Fout opgetreden: {data.createProduct.message}:{" "}
-          {data.createProduct.description}
-        </strong>
-      )}
+      {message?.message && <GlobalMessage message={message} />}
 
       <form onSubmit={onSubmit} className="form">
+        <label>
+          Overschrijven:
+          <input
+            type="checkbox"
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setUpdate(event.target.checked);
+            }}
+            name="update"
+          ></input>
+        </label>
         <label>
           Code:
           <input
