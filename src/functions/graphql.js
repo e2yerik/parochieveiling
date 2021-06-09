@@ -205,6 +205,8 @@ const resolvers = {
       return await faunaClient
         .query(fqlQueries.listProducts(args.active))
         .then(async (res) => {
+          console.log("allpr", { res });
+
           const result = flattenDataKeys(res);
           const enriched = await result.map(async (p) => {
             if (p.parentProduct) {
@@ -223,7 +225,7 @@ const resolvers = {
           return enriched;
         })
         .catch((res) => {
-          console.error("failed product lookup", res);
+          console.error("failed product list lookup", { res });
           return {
             message: res.message,
             description: res.description,
@@ -232,6 +234,9 @@ const resolvers = {
     },
 
     product: async (_, args, { faunaClient }) => {
+      const { code } = args;
+      console.log("pdp lookup", { code });
+
       return await faunaClient
         .query(fqlQueries.getProductByRef(args.code))
         .then(async (res) => {
@@ -264,7 +269,7 @@ const resolvers = {
           return rawData.product;
         })
         .catch((res) => {
-          console.error("failed product lookup", res);
+          console.error("failed product lookup", { res, code });
           return {
             message: res.message,
             description: res.description,
