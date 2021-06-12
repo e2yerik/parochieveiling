@@ -209,7 +209,7 @@ const CreateProductPage = () => {
             onChange={handleInputChange}
           />
         </label>
-
+        {/* 
         <label>
           URL grote afbeelding
           <input
@@ -237,7 +237,7 @@ const CreateProductPage = () => {
             name="price"
             onChange={handleInputChange}
           />
-        </label>
+        </label> */}
 
         <label>
           Vanaf prijs (optioneel)
