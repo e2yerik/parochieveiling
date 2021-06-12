@@ -68,7 +68,10 @@ const ProductListerPage: React.FC<ProductListProps> = () => {
           data.allProducts &&
           data.allProducts
             .filter((product: ProductData) => product.parentProduct == null)
-            .sort((p1: ProductData, p2: ProductData) => parseInt(p1.code, 10)> parseInt(p2.code, 10))
+            .sort(
+              (p1: ProductData, p2: ProductData) =>
+                parseInt(p1.code, 10) - parseInt(p2.code, 10)
+            )
             .map((product: ProductData) => (
               <li key={product.code}>
                 <Link to={`/kavel/${product.code}`} className="product__tile">
