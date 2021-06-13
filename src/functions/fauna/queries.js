@@ -25,7 +25,7 @@ module.exports = {
 
   allProducts: () => {
     return Map(
-      Paginate(Match(Index("allProducts")), { size: 250 }),
+      Paginate(Match(Index("allProducts")), { size: 10000 }),
       Lambda(
         "productRef",
 
@@ -46,7 +46,7 @@ module.exports = {
 
   listProducts: (active) => {
     return Map(
-      Paginate(Match(Index("product_lister_active"), active), { size: 250 }),
+      Paginate(Match(Index("product_lister_active"), active), { size: 1000 }),
       Lambda("productRef", Get(Var("productRef")))
     );
   },
@@ -73,7 +73,8 @@ module.exports = {
           Match(
             Index("product_bids_by_code"),
             Select(["data", 0], Paginate(Var("productMatch")))
-          ), {size: 500}
+          ),
+          { size: 1000 }
         ),
         false
       )
