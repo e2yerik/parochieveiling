@@ -3,6 +3,7 @@ import React, {
   ChangeEvent,
   FormEventHandler,
   useEffect,
+  KeyboardEventHandler,
 } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useHistory } from "react-router";
@@ -100,6 +101,13 @@ const CreateProductPage = () => {
 
   const [createProduct, { data }] = useMutation(CREATE_PRODUCT);
 
+  const checkKeyDown: any = (e: KeyboardEvent) => {
+    if (e.code === "Enter") {
+      e.preventDefault();
+      showMessage({ type: "good", message: "Enter ...." });
+    }
+  };
+
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -149,7 +157,7 @@ const CreateProductPage = () => {
 
       {message?.message && <GlobalMessage message={message} />}
 
-      <form onSubmit={onSubmit} className="form">
+      <form onSubmit={onSubmit} onKeyDown={checkKeyDown} className="form">
         {/* <label>
           Overschrijven:
           <input
