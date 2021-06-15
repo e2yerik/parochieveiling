@@ -136,6 +136,7 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
               Bod verhogen met
               <select value={bid} onChange={onChangeBid}>
                 <option value="-1">&euro;&euro;&euro;</option>
+                <option value="{currentPrice + 5}">+ 5 &euro;</option>
                 {steps.map((val) => (
                   <option key={val} value={currentPrice + val}>
                     + {val} &euro;
