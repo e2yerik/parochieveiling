@@ -112,6 +112,21 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
     (i: number) => singleStep * i
   );
 
+  const placeFixedBid = (event: any) => {
+    event.preventDefault();
+    if (price?.type === "FIXED") {
+      props.onMessage("", "");
+
+      placeBid({
+        variables: {
+          code: product.code,
+          bid: price.value.toString(),
+        },
+      });
+    }
+    return false;
+  };
+
   return (
     <>
       {price?.type == "MIN" && (
@@ -136,7 +151,7 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
               Bod verhogen met
               <select value={bid} onChange={onChangeBid}>
                 <option value="-1">&euro;&euro;&euro;</option>
-                <option value="{currentPrice + 5}">+ 5 &euro;</option>
+                <option value={currentPrice + 5}>+ 5 &euro;</option>
                 {steps.map((val) => (
                   <option key={val} value={currentPrice + val}>
                     + {val} &euro;
@@ -157,7 +172,7 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
 
       {price?.type == "FIXED" && (
         <div className="price__panel mb-xl">
-          <form onSubmit={onSubmit} className="form">
+          <form onSubmit={placeFixedBid} className="form">
             <label>
               Vaste prijs
               <input type="number" value={price.value} disabled={true} />
