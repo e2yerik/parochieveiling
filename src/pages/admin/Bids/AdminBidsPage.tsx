@@ -12,6 +12,7 @@ const ADMIN_BIDS_QUERY = gql`
       product {
         code
         name
+        shortDescription
       }
       priceValue
       timeStamp
@@ -61,21 +62,25 @@ const adminBidsPage: React.FC = () => {
 
       <table className="table mb-xl">
         <thead>
-          <th className="right">#</th>
-          <th>Product</th>
-          <th>Tijdstip</th>
-          <th>Gebruikersnaam</th>
-          <th>Bedrag</th>
+          <tr>
+            <th className="right">#</th>
+            <th>Kavel</th>
+            <th>Product</th>
+            <th>Tijdstip</th>
+            <th>Gebruikersnaam</th>
+            <th>Bedrag</th>
+          </tr>
         </thead>
         <tbody>
           {data?.adminBids?.map((bid: AdminBid, index: number) => (
-            <tr key={`${bid.product.code}-${bid.priceValue}`}>
+            <tr
+              key={`${bid.product.code}-${bid.timeStamp}-${bid.bidder.email}`}
+            >
               <td className="right">
                 <strong>{index + 1}.</strong>
               </td>
-              <td>
-                Product {bid.product.code} - {bid.product.name}
-              </td>
+              <td>{bid.product.code}</td>
+              <td>{bid.product.shortDescription}</td>
               <td>{formatTimeStamp(bid.timeStamp)}</td>
               <td>{bid.bidder.email}</td>
               <td>{bid.priceValue}</td>

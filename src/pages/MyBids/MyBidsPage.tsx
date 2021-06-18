@@ -13,6 +13,7 @@ const MY_BIDS_QUERY = gql`
       product {
         code
         name
+        shortDescription
       }
       priceValue
       timeStamp
@@ -59,6 +60,7 @@ const MyBidsPage: React.FC = () => {
       <table className="table mb-xl">
         <thead>
           <th className="right">#</th>
+          <th>Kavel</th>
           <th>Product</th>
           <th>Tijdstip</th>
           <th>Bedrag</th>
@@ -71,9 +73,8 @@ const MyBidsPage: React.FC = () => {
                 <td className="right">
                   <strong>{index + 1}.</strong>
                 </td>
-                <td>
-                  Product {bid.product.code} - {bid.product.name}
-                </td>
+                <td>{bid.product.code}</td>
+                <td>{bid.product.shortDescription}</td>
                 <td>{formatTimeStamp(bid.timeStamp)}</td>
                 <td>{formatPrice(parseFloat(bid.priceValue))}</td>
               </tr>
