@@ -7,6 +7,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import GlobalMessage from "../../../components/GlobalMessage";
+import { Message } from "../../../model/Message";
 import { PriceData, ProductData } from "../../../model/Product";
 import { formatPrice } from "../../admin/Product/CreateProductPage";
 
@@ -44,18 +46,28 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
     formattedValue: "",
     type: "FIXED",
   });
+  const [bidAccepted, setBidAccepted] = useState(false);
 
   const [placeBid, { data: bidData, loading: loadingPlaceBid }] =
     useMutation(PLACE_BID);
 
-  const { data: highestBidData } = useQuery(HIGHEST_BID, {
+  const { data: highestBidData, refetch } = useQuery(HIGHEST_BID, {
     variables: { code: product.code },
   });
   const [currentBid, setCurrentBid] = useState({} as PriceData);
 
+  const [inlineMessage, showInlineMessage] = useState<Message>({
+    message: "",
+    type: "",
+  });
+
   const onSubmit: FormEventHandler = (event: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
-    props.onMessage("", "");
+    // props.onMessage("", "");
+    showInlineMessage({
+      message: "",
+      type: "",
+    });
 
     placeBid({
       variables: {
@@ -91,12 +103,24 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
 
   useEffect(() => {
     if (bidData?.placeBid?.timeStamp) {
-      props.onMessage("Bedankt voor uw bod", "good");
+      // props.onMessage("Bedankt voor uw bod", "good");
+      showInlineMessage({
+        message: "Bedankt voor uw bod!",
+        type: "good",
+      });
+      refetch();
+      setBidAccepted(true);
+      setBid("");
     } else if (bidData?.placeBid?.message) {
-      props.onMessage(
-        `${bidData.placeBid.message} - ${bidData.placeBid.description}`,
-        "bad"
-      );
+      // props.onMessage(
+      //   `${bidData.placeBid.message} - ${bidData.placeBid.description}`,
+      //   "bad"
+      // );
+      showInlineMessage({
+        message: `${bidData.placeBid.message} - ${bidData.placeBid.description}`,
+        type: "bad",
+      });
+      setBid("");
     }
   }, [bidData]);
 
@@ -115,7 +139,11 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
   const placeFixedBid = (event: any) => {
     event.preventDefault();
     if (price?.type === "FIXED") {
-      props.onMessage("", "");
+      // props.onMessage("", "");
+      showInlineMessage({
+        message: "",
+        type: "",
+      });
 
       placeBid({
         variables: {
@@ -123,14 +151,17 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
           bid: price.value.toString(),
         },
       });
+      setBidAccepted(false);
     }
     return false;
   };
 
   return (
     <>
+      {inlineMessage?.message && <GlobalMessage message={inlineMessage} />}
+
       {price?.type == "MIN" && (
-        <div className="price__panel mb-s">
+        <div className="price__panel mb-s {bidAccepted && 'price__panel--highlight'}">
           <strong className="block mb-s">
             {props.beforeButtonText && <>Kavel {props.beforeButtonText} </>}
             {!currentBid?.value && (
@@ -140,7 +171,7 @@ const AddtoCartForm: React.FC<AddToCartFormProps> = (
               <>hoogste bod {formatPrice(currentBid.value)} </>
             )}
             {bid && (
-              <b style={{ color: "var(--warm-dark)" }}>
+              <b style={{ color: "#7de8b2" }}>
                 Jouw bod wordt dan: {formatPrice(parseFloat(bid))}
               </b>
             )}

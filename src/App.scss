@@ -185,11 +185,11 @@ select {
   font-size: 1.5rem;
 
   &.message--good {
-    background-color: $color-primary;
+    background-color: #7de8b2;
     color: white;
   }
   &.message--bad {
-    background-color: $color-warmdark;
+    background-color: red;
     color: white;
   }
 }
