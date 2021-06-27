@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import HomeComponent from "./pages/HomePage";
 import ProductPageComponent from "./pages/ProductPage/ProductPage";
 import ProductListerComponent from "./pages/ProductLister/ProductListerPage";
+import ClosedComponent from "./pages/ProductLister/ClosedComponent";
 
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -66,7 +67,7 @@ function App() {
           </nav>
           <main className="page__content container box-padding">
             <Route path="/" component={HomeComponent} exact />
-            <Route path="/kavels" component={ProductListerComponent} />
+            <Route path="/kavels" component={ClosedComponent} />
             <Route path="/kavel/:id" component={ProductPageComponent} />
 
             <Route path="/biedingen" component={MyBidsComponent} />
@@ -76,6 +77,7 @@ function App() {
             <Route path="/admin/user/create" component={CreateUserPage} />
             <Route path="/admin/product/create" component={CreateProductPage} />
             <Route path="/admin/bids" component={AdminBidsPage} />
+            <Route path="/admin/kavels" component={ProductListerComponent} />
           </main>
 
           <footer className="page__footer">
